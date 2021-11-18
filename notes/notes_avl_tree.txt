@@ -1,0 +1,14 @@
+AVL Tree Height
+- NULL node = -1
+- ONLY root node = 0
+- left child & child node = 1
+- calcualte the height by finding the max of left and right node and adding + 1 (for the root node)
+
+Balance Factor
+- BF = Left node height - right node height
+- in an AVL tree, abs(BF) <= 1
+- (+) = left heavy, (-) = right heavy
+
+Rotations: fix imbalances
+- left heavy: right, left-right 
+- right heavy: left, right-left
