@@ -38,7 +38,14 @@ int main(void)
     print_bst(root);
 
     puts("---------");
-    avl_delete(&root, 7);
+    avl_delete(&root, 1);
+    avl_delete(&root, 2);
+    avl_delete(&root, 3);
+    // avl_delete(&root, 4);
+    // avl_delete(&root, 5);
+    // avl_delete(&root, 6);
+    // avl_delete(&root, 7);
+    // avl_delete(&root, 8);
 
     print_bst(root);
     return 0;
@@ -48,7 +55,6 @@ int main(void)
 void avl_insert(NodePtr *root, int data)
 {
     NodePtr bst = *root;
-    puts("beg");
     if (!bst)
     {
         // we have gotten to an empty space, insert here
@@ -183,6 +189,33 @@ void avl_delete(NodePtr *root, int data)
         *root = newPtr;
         free(bst);
     }
+
+    NodePtr bst_new = *root;
+    if (!bst_new) // in case we deleted the root node
+        return;
+
+    bst_new->height = 1 + max(height(bst_new->left), height(bst_new->right));
+    int balance = getBalance(bst_new);
+
+    if (balance > 1 && data > bst_new->left->data) // left heavy
+        rightRotate(&bst);
+    if (balance < -1 && data > bst_new->right->data) // right heavy
+    {
+        leftRotate(&bst_new);
+    }
+
+    if (balance > 1 && data < bst_new->left->data) // left heavy
+    {
+        leftRotate(&(bst_new->left));
+        rightRotate(&bst_new);
+    }
+    if (balance < -1 && data < bst_new->right->data) // right heavy
+    {
+        rightRotate(&(bst_new->right));
+        leftRotate(&bst_new);
+    }
+
+    *root = bst_new;
 }
 
 // helper functions
