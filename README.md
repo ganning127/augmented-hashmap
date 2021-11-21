@@ -13,10 +13,12 @@ typedef struct node
 } Node;
 ```
 
+**Inserting a node**
 `void avl_insert(NodePtr *root, int data);`
 - `<root>` double pointer to the address of the avl tree you want to add to
 - `<data>` integer for the value in the avl tree to add
 
+**Deleting a node**
 `void avl_delete(NodePtr *root, int data);`
 - `<root>` double pointer to the address of the avl tree you want to delete from
 - `<data>` integer for the value in the avl tree to delete
