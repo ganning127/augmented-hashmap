@@ -15,13 +15,14 @@ void avl_delete(NodePtr *root, int data);
 void avl_print(NodePtr root);
 void avl_print_inorder(NodePtr root);
 int avl_height(NodePtr root);
-void print_bst(NodePtr bst);
+void print_avl(NodePtr bst);
+void destroy_avl(NodePtr *bstPtr);
 int max(int a, int b);
 size_t height(NodePtr node);
 void leftRotate(NodePtr *bst);
 void rightRotate(NodePtr *bst);
 int getBalance(NodePtr node);
-NodePtr *successor_bst(NodePtr *treePtr);
+NodePtr *successor_avl(NodePtr *treePtr);
 NodePtr avl_balance_insert(NodePtr bst, int data);
 NodePtr avl_balance_delete(NodePtr bst, int data);
 
@@ -37,7 +38,7 @@ int main(void)
     avl_insert(&root, 7);
     avl_insert(&root, 8);
 
-    print_bst(root);
+    print_avl(root);
     puts(" -- -- -- -- -- -- -- -- -");
     avl_delete(&root, 1);
     avl_delete(&root, 2);
@@ -47,7 +48,10 @@ int main(void)
     // avl_delete(&root, 6);
     // avl_delete(&root, 7);
     // avl_delete(&root, 8);
-    print_bst(root);
+
+    destroy_avl(&root);
+    free(root);
+
     return 0;
 }
 
@@ -76,7 +80,7 @@ void avl_insert(NodePtr *root, int data)
     *root = balanced;
 }
 
-NodePtr *successor_bst(NodePtr *treePtr)
+NodePtr *successor_avl(NodePtr *treePtr)
 {
     //
     NodePtr tree = *treePtr;
@@ -84,7 +88,7 @@ NodePtr *successor_bst(NodePtr *treePtr)
     {
         return treePtr;
     }
-    return successor_bst(&(tree->left));
+    return successor_avl(&(tree->left));
 }
 
 void leftRotate(NodePtr *bst)
@@ -114,7 +118,7 @@ void rightRotate(NodePtr *bst)
     bst_left->height = max(height(bst_left->left), height(bst_left->right)) + 1;
     *bst = bst_left;
 }
-void print_bst(NodePtr bst)
+void print_avl(NodePtr bst)
 {
     /*
         Avg, Best, Worst: O(n)
@@ -125,7 +129,7 @@ void print_bst(NodePtr bst)
     if (bst == NULL)
         return;
     ++depth;
-    print_bst(bst->right);
+    print_avl(bst->right);
     --depth;
 
     for (unsigned int i = 0; i < depth; ++i)
@@ -133,7 +137,7 @@ void print_bst(NodePtr bst)
 
     printf("%d\n", bst->data);
     ++depth;
-    print_bst(bst->left);
+    print_avl(bst->left);
     --depth;
 }
 
@@ -152,7 +156,7 @@ void avl_delete(NodePtr *root, int data)
         NodePtr newPtr;
         if (bst->left && bst->right)
         {
-            NodePtr *successorPtr = successor_bst(&(bst->right));
+            NodePtr *successorPtr = successor_avl(&(bst->right));
             newPtr = *successorPtr;        // deref to get successor
             *successorPtr = newPtr->right; // promote the right child to where the deleted node is
 
@@ -172,6 +176,22 @@ void avl_delete(NodePtr *root, int data)
 
     NodePtr balanced = avl_balance_delete(*root, data);
     *root = balanced;
+}
+
+void destroy_avl(NodePtr *bstPtr)
+{
+    /*
+        Avg, Best, Worst: O(n)
+            You need to go through each node in order to destroy the and free each node, resulting in a time complexity of O(n).
+    */
+    NodePtr bst = *bstPtr;
+    if (bst != NULL)
+    {
+        destroy_avl(&(bst->left));
+        destroy_avl(&(bst->right));
+        free(bst);
+        *bstPtr = NULL;
+    }
 }
 
 // helper functions
