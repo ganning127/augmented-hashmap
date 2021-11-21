@@ -3,7 +3,7 @@ A hashmap will be created that uses strings as keys, and anything (int, double, 
 
 [Augmented Hashmap Proposal](https://docs.google.com/document/d/16vmH7m28tknDMgWL7Yi4Lc_VVIr36cQQlZQSkLTCZEY/edit?usp=sharing)
 
-## AVL Documentation
+## AVL Documentation (`avl_tree.c`)
 **Node Declaration**
 ```c
 typedef struct node
