@@ -61,12 +61,12 @@ void avl_insert(NodePtr *root, int data)
         NodePtr node = malloc(sizeof(Node));
         node->data = data;
         node->left = node->right = NULL;
-        node->height = 1;
+        node->height = 0;
         *root = node; // bstPtr is a pointer to the node. we can't change the node itself because it is a local variable
     }
     else
     {
-        if (bst->data > data)
+        if (bst->data >= data)
             avl_insert(&(bst->left), data);
         else
             avl_insert(&(bst->right), data);
