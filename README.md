@@ -2,6 +2,17 @@
 [Augmented Hashmap Proposal](https://docs.google.com/document/d/16vmH7m28tknDMgWL7Yi4Lc_VVIr36cQQlZQSkLTCZEY/edit?usp=sharing)
 
 ## AVL Documentation
+**Node Declaration**
+```c
+typedef struct node
+{
+    int data;
+    struct node *left;
+    struct node *right;
+    size_t height;
+} Node;
+```
+
 `void avl_insert(NodePtr *root, int data);`
 - `<root>` double pointer to the address of the avl tree you want to add to
 - `<data>` integer for the value in the avl tree to add
