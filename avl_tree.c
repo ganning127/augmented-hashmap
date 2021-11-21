@@ -22,6 +22,8 @@ void leftRotate(NodePtr *bst);
 void rightRotate(NodePtr *bst);
 int getBalance(NodePtr node);
 NodePtr *successor_bst(NodePtr *treePtr);
+NodePtr avl_balance_insert(NodePtr bst, int data);
+NodePtr avl_balance_delete(NodePtr bst, int data);
 
 int main(void)
 {
@@ -36,8 +38,7 @@ int main(void)
     avl_insert(&root, 8);
 
     print_bst(root);
-
-    puts("---------");
+    puts(" -- -- -- -- -- -- -- -- -");
     avl_delete(&root, 1);
     avl_delete(&root, 2);
     avl_delete(&root, 3);
@@ -46,7 +47,6 @@ int main(void)
     // avl_delete(&root, 6);
     // avl_delete(&root, 7);
     // avl_delete(&root, 8);
-
     print_bst(root);
     return 0;
 }
@@ -72,30 +72,8 @@ void avl_insert(NodePtr *root, int data)
             avl_insert(&(bst->right), data);
     }
 
-    bst = *root;
-    // code below runs after we have inserted a node
-    bst->height = 1 + max(height(bst->left), height(bst->right));
-    int balance = getBalance(bst);
-
-    if (balance > 1 && data > bst->left->data) // left heavy
-        rightRotate(&bst);
-    if (balance < -1 && data > bst->right->data) // right heavy
-    {
-        leftRotate(&bst);
-    }
-
-    if (balance > 1 && data < bst->left->data) // left heavy
-    {
-        leftRotate(&(bst->left));
-        rightRotate(&bst);
-    }
-    if (balance < -1 && data < bst->right->data) // right heavy
-    {
-        rightRotate(&(bst->right));
-        leftRotate(&bst);
-    }
-
-    *root = bst;
+    NodePtr balanced = avl_balance_insert(*root, data);
+    *root = balanced;
 }
 
 NodePtr *successor_bst(NodePtr *treePtr)
@@ -111,26 +89,28 @@ NodePtr *successor_bst(NodePtr *treePtr)
 
 void leftRotate(NodePtr *bst)
 {
-    NodePtr bst_right = (*bst)->right;
+    NodePtr bst_deref = *bst;
+    NodePtr bst_right = bst_deref->right;
     NodePtr bst_right_left = bst_right->left;
 
     bst_right->left = *bst;
-    (*bst)->right = bst_right_left;
+    bst_deref->right = bst_right_left;
 
-    (*bst)->height = max(height((*bst)->left), height((*bst)->right)) + 1;
+    bst_deref->height = max(height(bst_deref->left), height(bst_deref->right)) + 1;
     bst_right->height = max(height(bst_right->left), height(bst_right->right)) + 1;
 
     *bst = bst_right;
 }
 void rightRotate(NodePtr *bst)
 {
-    NodePtr bst_left = (*bst)->left;
+    NodePtr bst_deref = *bst;
+    NodePtr bst_left = bst_deref->left;
     NodePtr bst_left_right = bst_left->right;
 
     bst_left->right = *bst;
-    (*bst)->left = bst_left_right;
+    bst_deref->left = bst_left_right;
 
-    (*bst)->height = max(height((*bst)->left), height((*bst)->right)) + 1;
+    bst_deref->height = max(height(bst_deref->left), height(bst_deref->right)) + 1;
     bst_left->height = max(height(bst_left->left), height(bst_left->right)) + 1;
     *bst = bst_left;
 }
@@ -190,32 +170,8 @@ void avl_delete(NodePtr *root, int data)
         free(bst);
     }
 
-    NodePtr bst_new = *root;
-    if (!bst_new) // in case we deleted the root node
-        return;
-
-    bst_new->height = 1 + max(height(bst_new->left), height(bst_new->right));
-    int balance = getBalance(bst_new);
-
-    if (balance > 1 && data > bst_new->left->data) // left heavy
-        rightRotate(&bst);
-    if (balance < -1 && data > bst_new->right->data) // right heavy
-    {
-        leftRotate(&bst_new);
-    }
-
-    if (balance > 1 && data < bst_new->left->data) // left heavy
-    {
-        leftRotate(&(bst_new->left));
-        rightRotate(&bst_new);
-    }
-    if (balance < -1 && data < bst_new->right->data) // right heavy
-    {
-        rightRotate(&(bst_new->right));
-        leftRotate(&bst_new);
-    }
-
-    *root = bst_new;
+    NodePtr balanced = avl_balance_delete(*root, data);
+    *root = balanced;
 }
 
 // helper functions
@@ -246,4 +202,58 @@ size_t height(NodePtr node)
     if (!node)
         return 0;
     return node->height;
+}
+
+NodePtr avl_balance_insert(NodePtr bst, int data)
+{
+    // code below runs after we have inserted a node
+    bst->height = 1 + max(height(bst->left), height(bst->right));
+    int balance = getBalance(bst);
+
+    if (balance > 1 && data > bst->left->data) // left heavy
+        rightRotate(&bst);
+    if (balance < -1 && data > bst->right->data) // right heavy
+        leftRotate(&bst);
+
+    if (balance > 1 && data < bst->left->data) // left heavy
+    {
+        leftRotate(&(bst->left));
+        rightRotate(&bst);
+    }
+    if (balance < -1 && data < bst->right->data) // right heavy
+    {
+        rightRotate(&(bst->right));
+        leftRotate(&bst);
+    }
+
+    return bst;
+}
+
+NodePtr avl_balance_delete(NodePtr bst, int data)
+{
+    if (!bst) // in case we deleted the root node
+        return NULL;
+
+    bst->height = 1 + max(height(bst->left), height(bst->right));
+
+    int balance_root = getBalance(bst);
+    int balance_left = getBalance(bst->left);
+    int balance_right = getBalance(bst->right);
+
+    if (balance_root > 1 && balance_left >= 0)
+        rightRotate(&bst);
+    if (balance_root > 1 && balance_right < 0)
+    {
+        leftRotate(&(bst->left));
+        rightRotate(&bst);
+    }
+    if (balance_root < -1 && balance_right <= 0)
+        leftRotate(&bst);
+    if (balance_root < -1 && balance_right > 0)
+    {
+        rightRotate(&(bst->right));
+        leftRotate(&bst);
+    }
+
+    return bst;
 }
