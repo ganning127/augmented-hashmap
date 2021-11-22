@@ -1,33 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "structs.h"
-#define INITIAL_SIZE 1
-#define LOAD_FACTOR 0.75
-
-typedef struct hash_node
-{
-    char *key;
-    int value;
-} HNode;
-typedef HNode *HNodePtr;
-
-typedef struct tree_node
-{
-    HNodePtr data; // each node in the bst should hold a HNode
-    struct tree_node *left;
-    struct tree_node *right;
-    size_t height;
-} TreeNode;
-typedef TreeNode *TreeNodePtr;
-
-typedef struct arraylist_nodes
-{
-    TreeNodePtr *array; // array of avl trees
-    size_t size;
-    size_t capacity;
-} ArrayListNodes;
-typedef ArrayListNodes *ArrayListNodesPtr;
 
 size_t hashmap_hash(char *str, size_t size);
 void hashmap_insert(ArrayListNodesPtr list, char *key, int value);
@@ -55,11 +26,11 @@ int main(void)
 {
     ArrayListNodesPtr list = arln_create();
     hashmap_insert(list, "abc", 1);
-    hashmap_insert(list, "acc", 2);
+    hashmap_insert(list, "abc", 2);
     hashmap_insert(list, "adc", 3);
     hashmap_insert(list, "aec", 4);
 
-    hashmap_delete(list, "abc");
+    // hashmap_delete(list, "abc");
     avl_print(list->array[0]);
 
     printf("%d\n", hashmap_get(list, "abc"));
@@ -177,7 +148,6 @@ TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
 
 void avl_left_rotate(TreeNodePtr *bst)
 {
-    puts("left roatation");
     TreeNodePtr bst_deref = *bst;
     TreeNodePtr bst_right = bst_deref->right;
     TreeNodePtr bst_right_left = bst_right->left;
@@ -192,7 +162,6 @@ void avl_left_rotate(TreeNodePtr *bst)
 }
 void avl_right_rotate(TreeNodePtr *bst)
 {
-    puts("right roatation");
     TreeNodePtr bst_deref = *bst;
     TreeNodePtr bst_left = bst_deref->left;
     TreeNodePtr bst_left_right = bst_left->right;
