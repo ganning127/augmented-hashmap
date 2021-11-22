@@ -12,17 +12,13 @@ typedef Node *NodePtr;
 
 void avl_insert(NodePtr *root, int data);
 void avl_delete(NodePtr *root, int data);
-void avl_print(NodePtr root);
-void avl_print_inorder(NodePtr root);
-int avl_height(NodePtr root);
-void print_avl(NodePtr bst);
-void destroy_avl(NodePtr *bstPtr);
+void avl_print(NodePtr bst);
 int max(int a, int b);
 size_t height(NodePtr node);
-void leftRotate(NodePtr *bst);
-void rightRotate(NodePtr *bst);
-int getBalance(NodePtr node);
-NodePtr *successor_avl(NodePtr *treePtr);
+void avl_left_rotate(NodePtr *bst);
+void avl_right_rotate(NodePtr *bst);
+int avl_get_balance(NodePtr node);
+NodePtr *avl_successor(NodePtr *treePtr);
 NodePtr avl_balance_insert(NodePtr bst, int data);
 NodePtr avl_balance_delete(NodePtr bst, int data);
 
@@ -37,21 +33,19 @@ int main(void)
     avl_insert(&root, 6);
     avl_insert(&root, 7);
     avl_insert(&root, 8);
+    avl_insert(&root, 2);
 
-    print_avl(root);
+    avl_print(root);
     puts(" -- -- -- -- -- -- -- -- -");
-    avl_delete(&root, 1);
+    // avl_delete(&root, 1);
     avl_delete(&root, 2);
-    avl_delete(&root, 3);
+    // avl_delete(&root, 3);
     // avl_delete(&root, 4);
     // avl_delete(&root, 5);
     // avl_delete(&root, 6);
     // avl_delete(&root, 7);
     // avl_delete(&root, 8);
-
-    destroy_avl(&root);
-    free(root);
-
+    avl_print(root);
     return 0;
 }
 
@@ -65,12 +59,12 @@ void avl_insert(NodePtr *root, int data)
         NodePtr node = malloc(sizeof(Node));
         node->data = data;
         node->left = node->right = NULL;
-        node->height = 0;
+        node->height = 1;
         *root = node; // bstPtr is a pointer to the node. we can't change the node itself because it is a local variable
     }
     else
     {
-        if (bst->data >= data)
+        if (bst->data > data)
             avl_insert(&(bst->left), data);
         else
             avl_insert(&(bst->right), data);
@@ -80,7 +74,7 @@ void avl_insert(NodePtr *root, int data)
     *root = balanced;
 }
 
-NodePtr *successor_avl(NodePtr *treePtr)
+NodePtr *avl_successor(NodePtr *treePtr)
 {
     //
     NodePtr tree = *treePtr;
@@ -88,10 +82,10 @@ NodePtr *successor_avl(NodePtr *treePtr)
     {
         return treePtr;
     }
-    return successor_avl(&(tree->left));
+    return avl_successor(&(tree->left));
 }
 
-void leftRotate(NodePtr *bst)
+void avl_left_rotate(NodePtr *bst)
 {
     NodePtr bst_deref = *bst;
     NodePtr bst_right = bst_deref->right;
@@ -105,7 +99,7 @@ void leftRotate(NodePtr *bst)
 
     *bst = bst_right;
 }
-void rightRotate(NodePtr *bst)
+void avl_right_rotate(NodePtr *bst)
 {
     NodePtr bst_deref = *bst;
     NodePtr bst_left = bst_deref->left;
@@ -118,7 +112,7 @@ void rightRotate(NodePtr *bst)
     bst_left->height = max(height(bst_left->left), height(bst_left->right)) + 1;
     *bst = bst_left;
 }
-void print_avl(NodePtr bst)
+void avl_print(NodePtr bst)
 {
     /*
         Avg, Best, Worst: O(n)
@@ -129,7 +123,7 @@ void print_avl(NodePtr bst)
     if (bst == NULL)
         return;
     ++depth;
-    print_avl(bst->right);
+    avl_print(bst->right);
     --depth;
 
     for (unsigned int i = 0; i < depth; ++i)
@@ -137,7 +131,7 @@ void print_avl(NodePtr bst)
 
     printf("%d\n", bst->data);
     ++depth;
-    print_avl(bst->left);
+    avl_print(bst->left);
     --depth;
 }
 
@@ -156,7 +150,7 @@ void avl_delete(NodePtr *root, int data)
         NodePtr newPtr;
         if (bst->left && bst->right)
         {
-            NodePtr *successorPtr = successor_avl(&(bst->right));
+            NodePtr *successorPtr = avl_successor(&(bst->right));
             newPtr = *successorPtr;        // deref to get successor
             *successorPtr = newPtr->right; // promote the right child to where the deleted node is
 
@@ -178,37 +172,14 @@ void avl_delete(NodePtr *root, int data)
     *root = balanced;
 }
 
-void destroy_avl(NodePtr *bstPtr)
-{
-    /*
-        Avg, Best, Worst: O(n)
-            You need to go through each node in order to destroy the and free each node, resulting in a time complexity of O(n).
-    */
-    NodePtr bst = *bstPtr;
-    if (bst != NULL)
-    {
-        destroy_avl(&(bst->left));
-        destroy_avl(&(bst->right));
-        free(bst);
-        *bstPtr = NULL;
-    }
-}
-
 // helper functions
-int avl_height(NodePtr root)
-{
-    if (root == NULL)
-        return -1;
-    return root->height;
-}
-
 int max(int a, int b)
 {
     // returns the max value of two numbers
     return (a > b) ? a : b;
 }
 
-int getBalance(NodePtr node)
+int avl_get_balance(NodePtr node)
 {
     // get the balance factor of the left and right subtrees
     if (!node)
@@ -228,22 +199,22 @@ NodePtr avl_balance_insert(NodePtr bst, int data)
 {
     // code below runs after we have inserted a node
     bst->height = 1 + max(height(bst->left), height(bst->right));
-    int balance = getBalance(bst);
+    int balance = avl_get_balance(bst);
 
     if (balance > 1 && data > bst->left->data) // left heavy
-        rightRotate(&bst);
+        avl_right_rotate(&bst);
     if (balance < -1 && data > bst->right->data) // right heavy
-        leftRotate(&bst);
+        avl_left_rotate(&bst);
 
     if (balance > 1 && data < bst->left->data) // left heavy
     {
-        leftRotate(&(bst->left));
-        rightRotate(&bst);
+        avl_left_rotate(&(bst->left));
+        avl_right_rotate(&bst);
     }
     if (balance < -1 && data < bst->right->data) // right heavy
     {
-        rightRotate(&(bst->right));
-        leftRotate(&bst);
+        avl_right_rotate(&(bst->right));
+        avl_left_rotate(&bst);
     }
 
     return bst;
@@ -256,23 +227,23 @@ NodePtr avl_balance_delete(NodePtr bst, int data)
 
     bst->height = 1 + max(height(bst->left), height(bst->right));
 
-    int balance_root = getBalance(bst);
-    int balance_left = getBalance(bst->left);
-    int balance_right = getBalance(bst->right);
+    int balance_root = avl_get_balance(bst);
+    int balance_left = avl_get_balance(bst->left);
+    int balance_right = avl_get_balance(bst->right);
 
     if (balance_root > 1 && balance_left >= 0)
-        rightRotate(&bst);
+        avl_right_rotate(&bst);
     if (balance_root > 1 && balance_right < 0)
     {
-        leftRotate(&(bst->left));
-        rightRotate(&bst);
+        avl_left_rotate(&(bst->left));
+        avl_right_rotate(&bst);
     }
     if (balance_root < -1 && balance_right <= 0)
-        leftRotate(&bst);
+        avl_left_rotate(&bst);
     if (balance_root < -1 && balance_right > 0)
     {
-        rightRotate(&(bst->right));
-        leftRotate(&bst);
+        avl_right_rotate(&(bst->right));
+        avl_left_rotate(&bst);
     }
 
     return bst;
