@@ -1,8 +1,8 @@
 # Augmented Hashmaps
 A hashmap will be created that uses strings as keys, and anything (int, double, char, pointers) can be stored as a value. A self-balancing binary tree (implemented as an AVL tree) will be used as buckets, with the binary tree being sorted alphabetically based on the key. 
 
-[Flowchart](https://lucid.app/lucidchart/97708b42-f8a6-4c86-858a-336336a771f1/edit?viewport_loc=-539%2C-364%2C3344%2C1912%2C0_0&invitationId=inv_862a9d94-973f-45d0-a7f3-96b0b57e108b)
-[Augmented Hashmap Proposal](https://docs.google.com/document/d/16vmH7m28tknDMgWL7Yi4Lc_VVIr36cQQlZQSkLTCZEY/edit?usp=sharing)
+- [Flowchart](https://lucid.app/lucidchart/97708b42-f8a6-4c86-858a-336336a771f1/edit?viewport_loc=-539%2C-364%2C3344%2C1912%2C0_0&invitationId=inv_862a9d94-973f-45d0-a7f3-96b0b57e108b)
+- [Augmented Hashmap Proposal](https://docs.google.com/document/d/16vmH7m28tknDMgWL7Yi4Lc_VVIr36cQQlZQSkLTCZEY/edit?usp=sharing)
 
 ## Basic AVL Documentation (`./avl_tree/avl_tree.c`)
 **Node Declaration**
