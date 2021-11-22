@@ -28,7 +28,7 @@ typedef struct node
 - `<root>` double pointer to the address of the avl tree you want to delete from
 - `<data>` integer for the value in the avl tree to delete
 
-## Hashmap Documentation
+## Hashmap Documentation (`./hashmap/hashmap.c`)
 **Hash Node Declaration**
 ```c
 typedef struct hash_node
