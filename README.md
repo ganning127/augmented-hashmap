@@ -6,7 +6,7 @@ A hashmap will be created that uses strings as keys, and anything (int, double, 
 
 ## Basic AVL Documentation (`./avl_tree/avl_tree.c`)
 **Node Declaration**
-```c=
+```c
 typedef struct node
 {
     int data;
@@ -17,18 +17,20 @@ typedef struct node
 ```
 
 **Inserting a node**
+
 `void avl_insert(NodePtr *<root>, int <data>);`
 - `<root>` double pointer to the address of the avl tree you want to add to
 - `<data>` integer for the value in the avl tree to add
 
 **Deleting a node**
+
 `void avl_delete(NodePtr *<root>, int <data>);`
 - `<root>` double pointer to the address of the avl tree you want to delete from
 - `<data>` integer for the value in the avl tree to delete
 
 ## Hashmap Documentation
 **Hash Node Declaration**
-```c=
+```c
 typedef struct hash_node
 {
     char *key;
@@ -38,7 +40,7 @@ typedef HNode *HNodePtr;
 ```
 
 **Tree Node Declaration**
-```c=
+```c
 typedef struct tree_node
 {
     HNodePtr data; // each node in the bst should hold a HNode
@@ -50,7 +52,7 @@ typedef TreeNode *TreeNodePtr;
 ```
 
 **ArrayList Nodes Declaration**
-```c=
+```c
 typedef struct arraylist_nodes
 {
     TreeNodePtr *array; // array of avl trees
@@ -61,6 +63,7 @@ typedef ArrayListNodes *ArrayListNodesPtr;
 ```
 
 **Inserting a key-value pair**
+
 `void hashmap_insert(ArrayListNodesPtr <list>, char *<key>, int <value>)`
 
 - `<list>` pointer to the arraylist that represents the hashmap
@@ -68,6 +71,7 @@ typedef ArrayListNodes *ArrayListNodesPtr;
 - `<value>` integer that is the value of the key
 
 **Deleting a key-value pair**
+
 `void hashmap_delete(ArrayListNodesPtr <list>, char *<key>);`
 
 - `<list>` pointer to the arraylist that represents the hashmap
