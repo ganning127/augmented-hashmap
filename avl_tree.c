@@ -21,6 +21,7 @@ int avl_get_balance(NodePtr node);
 NodePtr *avl_successor(NodePtr *treePtr);
 NodePtr avl_balance_insert(NodePtr bst, int data);
 NodePtr avl_balance_delete(NodePtr bst, int data);
+NodePtr avl_tree_find(NodePtr bst, int data);
 
 int main(void)
 {
@@ -35,16 +36,6 @@ int main(void)
     avl_insert(&root, 8);
     avl_insert(&root, 2);
 
-    avl_print(root);
-    puts(" -- -- -- -- -- -- -- -- -");
-    // avl_delete(&root, 1);
-    avl_delete(&root, 2);
-    // avl_delete(&root, 3);
-    // avl_delete(&root, 4);
-    // avl_delete(&root, 5);
-    // avl_delete(&root, 6);
-    // avl_delete(&root, 7);
-    // avl_delete(&root, 8);
     avl_print(root);
     return 0;
 }
@@ -170,6 +161,18 @@ void avl_delete(NodePtr *root, int data)
 
     NodePtr balanced = avl_balance_delete(*root, data);
     *root = balanced;
+}
+
+NodePtr avl_tree_find(NodePtr bst, int data)
+{
+    if (!bst)
+        return NULL;
+    else if (bst->data > data)
+        return avl_tree_find(bst->left, data);
+    else if (bst->data < data)
+        return avl_tree_find(bst->right, data);
+    else
+        return bst;
 }
 
 // helper functions
