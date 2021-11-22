@@ -8,32 +8,32 @@ typedef struct hash_node
 } HNode;
 typedef HNode *HNodePtr;
 
-typedef struct node
+typedef struct tree_node
 {
     HNodePtr data;
-    struct node *left;
-    struct node *right;
+    struct tree_node *left;
+    struct tree_node *right;
     size_t height;
-} Node;
-typedef Node *NodePtr;
+} TreeNode;
+typedef TreeNode *TreeNodePtr;
 
-void avl_insert(NodePtr *root, HNodePtr data);
-void avl_delete(NodePtr *root, HNodePtr data);
-void avl_print(NodePtr bst);
+void avl_insert(TreeNodePtr *root, HNodePtr data);
+void avl_delete(TreeNodePtr *root, HNodePtr data);
+void avl_print(TreeNodePtr bst);
 int max(int a, int b);
-size_t height(NodePtr node);
-void avl_left_rotate(NodePtr *bst);
-void avl_right_rotate(NodePtr *bst);
-int avl_get_balance(NodePtr node);
-NodePtr *avl_successor(NodePtr *treePtr);
-NodePtr avl_balance_insert(NodePtr bst, HNodePtr data);
-NodePtr avl_balance_delete(NodePtr bst);
-NodePtr avl_find(NodePtr bst, char *key);
+size_t height(TreeNodePtr node);
+void avl_left_rotate(TreeNodePtr *bst);
+void avl_right_rotate(TreeNodePtr *bst);
+int avl_get_balance(TreeNodePtr node);
+TreeNodePtr *avl_successor(TreeNodePtr *treePtr);
+TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data);
+TreeNodePtr avl_balance_delete(TreeNodePtr bst);
+TreeNodePtr avl_find(TreeNodePtr bst, char *key);
 HNodePtr createHNode(char *key, int value);
 
 int main(void)
 {
-    NodePtr root = NULL;
+    TreeNodePtr root = NULL;
 
     HNodePtr first = createHNode("first", 1);
     HNodePtr second = createHNode("second", 2);
@@ -44,7 +44,7 @@ int main(void)
     avl_insert(&root, third);
 
     avl_delete(&root, second);
-    NodePtr found = avl_find(root, "first");
+    TreeNodePtr found = avl_find(root, "first");
     printf("Found: %d\n", found->data->value);
 
     avl_print(root);
@@ -60,13 +60,13 @@ HNodePtr createHNode(char *key, int value)
 }
 
 // important functions
-void avl_insert(NodePtr *root, HNodePtr data)
+void avl_insert(TreeNodePtr *root, HNodePtr data)
 {
-    NodePtr bst = *root;
+    TreeNodePtr bst = *root;
     if (!bst)
     {
         // we have gotten to an empty space, insert here
-        NodePtr node = malloc(sizeof(Node));
+        TreeNodePtr node = malloc(sizeof(TreeNode));
         node->data = data;
         node->left = node->right = NULL;
         node->height = 1;
@@ -80,14 +80,14 @@ void avl_insert(NodePtr *root, HNodePtr data)
             avl_insert(&(bst->right), data);
     }
 
-    NodePtr balanced = avl_balance_insert(*root, data);
+    TreeNodePtr balanced = avl_balance_insert(*root, data);
     *root = balanced;
 }
 
-NodePtr *avl_successor(NodePtr *treePtr)
+TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
 {
     //
-    NodePtr tree = *treePtr;
+    TreeNodePtr tree = *treePtr;
     if (tree->left == NULL)
     {
         return treePtr;
@@ -95,11 +95,11 @@ NodePtr *avl_successor(NodePtr *treePtr)
     return avl_successor(&(tree->left));
 }
 
-void avl_left_rotate(NodePtr *bst)
+void avl_left_rotate(TreeNodePtr *bst)
 {
-    NodePtr bst_deref = *bst;
-    NodePtr bst_right = bst_deref->right;
-    NodePtr bst_right_left = bst_right->left;
+    TreeNodePtr bst_deref = *bst;
+    TreeNodePtr bst_right = bst_deref->right;
+    TreeNodePtr bst_right_left = bst_right->left;
 
     bst_right->left = *bst;
     bst_deref->right = bst_right_left;
@@ -109,11 +109,11 @@ void avl_left_rotate(NodePtr *bst)
 
     *bst = bst_right;
 }
-void avl_right_rotate(NodePtr *bst)
+void avl_right_rotate(TreeNodePtr *bst)
 {
-    NodePtr bst_deref = *bst;
-    NodePtr bst_left = bst_deref->left;
-    NodePtr bst_left_right = bst_left->right;
+    TreeNodePtr bst_deref = *bst;
+    TreeNodePtr bst_left = bst_deref->left;
+    TreeNodePtr bst_left_right = bst_left->right;
 
     bst_left->right = *bst;
     bst_deref->left = bst_left_right;
@@ -122,7 +122,7 @@ void avl_right_rotate(NodePtr *bst)
     bst_left->height = max(height(bst_left->left), height(bst_left->right)) + 1;
     *bst = bst_left;
 }
-void avl_print(NodePtr bst)
+void avl_print(TreeNodePtr bst)
 {
     /*
         Avg, Best, Worst: O(n)
@@ -145,9 +145,9 @@ void avl_print(NodePtr bst)
     --depth;
 }
 
-void avl_delete(NodePtr *root, HNodePtr data)
+void avl_delete(TreeNodePtr *root, HNodePtr data)
 {
-    NodePtr bst = *root;
+    TreeNodePtr bst = *root;
     if (!bst) // if the bst is empty, we can't delete anything
         return;
 
@@ -157,10 +157,10 @@ void avl_delete(NodePtr *root, HNodePtr data)
         avl_delete(&(bst->right), data);
     else
     {
-        NodePtr newPtr;
+        TreeNodePtr newPtr;
         if (bst->left && bst->right)
         {
-            NodePtr *successorPtr = avl_successor(&(bst->right));
+            TreeNodePtr *successorPtr = avl_successor(&(bst->right));
             newPtr = *successorPtr;        // deref to get successor
             *successorPtr = newPtr->right; // promote the right child to where the deleted node is
 
@@ -178,11 +178,11 @@ void avl_delete(NodePtr *root, HNodePtr data)
         free(bst);
     }
 
-    NodePtr balanced = avl_balance_delete(*root);
+    TreeNodePtr balanced = avl_balance_delete(*root);
     *root = balanced;
 }
 
-NodePtr avl_find(NodePtr bst, char *key)
+TreeNodePtr avl_find(TreeNodePtr bst, char *key)
 {
     if (!bst)
         return NULL;
@@ -201,7 +201,7 @@ int max(int a, int b)
     return (a > b) ? a : b;
 }
 
-int avl_get_balance(NodePtr node)
+int avl_get_balance(TreeNodePtr node)
 {
     // get the balance factor of the left and right subtrees
     if (!node)
@@ -209,7 +209,7 @@ int avl_get_balance(NodePtr node)
     return height(node->left) - height(node->right);
 }
 
-size_t height(NodePtr node)
+size_t height(TreeNodePtr node)
 {
     // returns the height of a node
     if (!node)
@@ -217,7 +217,7 @@ size_t height(NodePtr node)
     return node->height;
 }
 
-NodePtr avl_balance_insert(NodePtr bst, HNodePtr data)
+TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data)
 {
     // code below runs after we have inserted a node
     bst->height = 1 + max(height(bst->left), height(bst->right));
@@ -242,7 +242,7 @@ NodePtr avl_balance_insert(NodePtr bst, HNodePtr data)
     return bst;
 }
 
-NodePtr avl_balance_delete(NodePtr bst)
+TreeNodePtr avl_balance_delete(TreeNodePtr bst)
 {
     if (!bst) // in case we deleted the root node
         return NULL;

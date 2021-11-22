@@ -126,7 +126,7 @@ void avl_print(NodePtr bst)
     --depth;
 }
 
-void avl_delete(NodePtr *root, HNodePtr data)
+void avl_delete(NodePtr *root, int data)
 {
     NodePtr bst = *root;
     if (!bst) // if the bst is empty, we can't delete anything
