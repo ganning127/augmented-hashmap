@@ -4,6 +4,20 @@ A hashmap will be created that uses strings as keys, and anything (int, double, 
 - [Flowchart](https://lucid.app/lucidchart/97708b42-f8a6-4c86-858a-336336a771f1/edit?viewport_loc=-539%2C-364%2C3344%2C1912%2C0_0&invitationId=inv_862a9d94-973f-45d0-a7f3-96b0b57e108b)
 - [Augmented Hashmap Proposal](https://docs.google.com/document/d/16vmH7m28tknDMgWL7Yi4Lc_VVIr36cQQlZQSkLTCZEY/edit?usp=sharing)
 
+## Hashmap Documentation `./hashmap_any/hashmap.c`
+This hashmap works with any data type!
+
+**Node Declaration**
+```c
+typedef struct hash_node
+{
+    char *key;
+    int type;
+    void *value;
+} HNode;
+typedef HNode *HNodePtr;
+```
+
 ## Basic AVL Documentation (`./avl_tree/avl_tree.c`)
 **Node Declaration**
 ```c
@@ -28,7 +42,7 @@ typedef struct node
 - `<root>` double pointer to the address of the avl tree you want to delete from
 - `<data>` integer for the value in the avl tree to delete
 
-## Hashmap Documentation (`./hashmap/hashmap.c`)
+## Integer Hashmap Documentation (`./hashmap_int/hashmap.c`)
 **Hash Node Declaration**
 ```c
 typedef struct hash_node
