@@ -13,7 +13,7 @@ HNodePtr hashmap_get(ArrayListNodesPtr list, char *key);
 void hashmap_delete(ArrayListNodesPtr list, char *key);
 
 void avl_insert(TreeNodePtr *root, HNodePtr data);
-void avl_delete(TreeNodePtr *root, HNodePtr data);
+void avl_delete(TreeNodePtr *root, char *key);
 void avl_print(TreeNodePtr bst);
 int max(int a, int b);
 size_t height(TreeNodePtr node);
@@ -39,11 +39,12 @@ int main(void)
     hashmap_insert_any(list, "def", STRING, ins2);
     hashmap_insert_any(list, "ghi", DOUBLE, &ins3);
 
+    hashmap_delete(list, "abc");
     HNodePtr res1 = hashmap_get(list, "abc");
     HNodePtr res2 = hashmap_get(list, "def");
     HNodePtr res3 = hashmap_get(list, "ghi");
 
-    displayNodeValue(res1);
+    // displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
 }
@@ -79,14 +80,12 @@ ArrayListNodes *arln_create()
     return list;
 }
 
-// void hashmap_delete(ArrayListNodesPtr list, char *key)
-// {
-//     size_t index = hashmap_hash(key, list->capacity);
-//     TreeNodePtr *treePtr = &(list->array[index]);
-//     HNodePtr data = createHNodeAny(key, 0);
-//     avl_delete(treePtr, data);
-//     free(data);
-// }
+void hashmap_delete(ArrayListNodesPtr list, char *key)
+{
+    size_t index = hashmap_hash(key, list->capacity);
+    TreeNodePtr *treePtr = &(list->array[index]);
+    avl_delete(treePtr, key);
+}
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
@@ -226,16 +225,16 @@ void avl_print(TreeNodePtr bst)
     --depth;
 }
 
-void avl_delete(TreeNodePtr *root, HNodePtr data)
+void avl_delete(TreeNodePtr *root, char *key)
 {
     TreeNodePtr bst = *root;
     if (!bst) // if the bst is empty, we can't delete anything
         return;
 
-    if (strcmp(bst->data->key, data->key) > 0)
-        avl_delete(&(bst->left), data);
-    else if (strcmp(bst->data->key, data->key) < 0)
-        avl_delete(&(bst->right), data);
+    if (strcmp(bst->data->key, key) > 0)
+        avl_delete(&(bst->left), key);
+    else if (strcmp(bst->data->key, key) < 0)
+        avl_delete(&(bst->right), key);
     else
     {
         TreeNodePtr newPtr;
