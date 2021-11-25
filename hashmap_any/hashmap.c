@@ -47,20 +47,26 @@ int main(void)
     hashmap_insert_any(list, "123", DOUBLE, &ins3);
     hashmap_insert_any(list, "1234", DOUBLE, &ins3);
 
-    hashmap_delete(list, "abc");
+    printf("capacity: %zu\n", list->capacity);
+    printf("size: %zu\n", list->size);
+
     HNodePtr res1 = hashmap_get(list, "abc");
     HNodePtr res2 = hashmap_get(list, "def");
     HNodePtr res3 = hashmap_get(list, "ghi");
 
-    // displayNodeValue(res1);
+    displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
 
-    hashmap_destroy(&list);
+    // hashmap_destroy(&list);
 }
 
 void displayNodeValue(HNodePtr node)
 {
+    if (node == NULL)
+    {
+        return;
+    }
     switch (node->type)
     {
     case INT:
@@ -82,8 +88,8 @@ ArrayListNodes *arln_create()
 {
     ArrayListNodes *list = malloc(sizeof(ArrayListNodes));
     list->size = 0;
-    list->capacity = INITIAL_SIZE;
-    list->array = calloc(sizeof(HNode *), INITIAL_SIZE);
+    list->capacity = INITIAL_CAPACITY;
+    list->array = calloc(sizeof(HNode *), INITIAL_CAPACITY);
     // set all the pointers to NULL
     for (size_t i = 0; i < list->capacity; i++)
         list->array[i] = NULL;
@@ -113,34 +119,31 @@ void resize_helper(TreeNodePtr bin, ArrayListNodes *newList)
     if (bin == NULL)
         return;
 
-    hashmap_insert_any(newList, bin->data->key, bin->data->type, bin->data->value);
-
     resize_helper(bin->left, newList);
+    hashmap_insert_any(newList, bin->data->key, bin->data->type, bin->data->value);
     resize_helper(bin->right, newList);
 }
 
 void resize(ArrayListNodes **listPtr)
 {
+    printf("resizing\n");
     ArrayListNodes *list = *listPtr;
     // Create a bigger hashmap
     ArrayListNodes *newList = malloc(sizeof(ArrayListNodes));
-    newList->size = list->size;
+    newList->size = 0;
     newList->capacity = list->capacity * 2;
+    printf("newList capacity: %zu\n", newList->capacity);
     newList->array = calloc(sizeof(HNode *), newList->capacity);
 
     // Insert all of the values of the old hashmap into the new one
     for (size_t i = 0; i < list->capacity; ++i)
-    {
-        // Insert all of the values in a bin
         resize_helper(list->array[i], newList);
-    }
 
     // Reassign the pointer to the old hashmap to the new one
-    printf("%p\n", list);
-    hashmap_destroy(&list);
-    printf("%p\n", list);
-    printf("Reassigning list\n");
-    **listPtr = *newList;
+    // printf("%p\n", list);
+
+    // printf("%p\n", list);
+    *listPtr = newList;
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
@@ -150,10 +153,10 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
     HNodePtr nu = createHNodeAny(key, type, value);
     // nu is now the data that we want to insert into the tree
 
-    avl_insert(&(list->array[index]), nu);
-
     if (list->size > list->capacity * LOAD_FACTOR) // change this
         resize(&list);
+
+    avl_insert(&(list->array[index]), nu);
 }
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
