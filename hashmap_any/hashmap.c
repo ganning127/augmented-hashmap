@@ -87,6 +87,13 @@ void hashmap_delete(ArrayListNodesPtr list, char *key)
     avl_delete(treePtr, key);
 }
 
+void resize(ArrayListNodes *list)
+{
+    // Create a bigger hashmap
+    // Insert all of the values of the old hashmap into the new one
+    // Reassign the pointer to the old hashmap to the new one
+}
+
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
     size_t index = hashmap_hash(key, list->capacity);
