@@ -30,6 +30,7 @@ ArrayListNodes *arln_create();
 void displayNodeValue(HNodePtr node);
 void resize(ArrayListNodes *list);
 void resize_helper(TreeNodePtr bin, ArrayListNodes *newList);
+void hashmap_destroy(ArrayListNodes **listPtr);
 
 int main(void)
 {
@@ -87,6 +88,17 @@ ArrayListNodes *arln_create()
     return list;
 }
 
+void hashmap_destroy(ArrayListNodes **listPtr)
+{
+    ArrayListNodes *list = *listPtr;
+    for (size_t i = 0; i < list->capacity; ++i)
+        avl_destroy(&(list->array[i]));
+
+    free(list->array);
+    free(list);
+    **listPtr = NULL;
+}
+
 void hashmap_delete(ArrayListNodesPtr list, char *key)
 {
     size_t index = hashmap_hash(key, list->capacity);
@@ -121,6 +133,7 @@ void resize(ArrayListNodes *list)
     }
 
     // Reassign the pointer to the old hashmap to the new one
+    hashmap_destroy(&list);
     *list = *newList;
 }
 
