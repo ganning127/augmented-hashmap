@@ -24,10 +24,12 @@ TreeNodePtr *avl_successor(TreeNodePtr *treePtr);
 TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data);
 TreeNodePtr avl_balance_delete(TreeNodePtr bst);
 TreeNodePtr avl_find(TreeNodePtr bst, char *key);
+void avl_destroy(TreeNodePtr *bstPtr);
 HNodePtr createHNodeAny(char *key, int type, void *value);
 ArrayListNodes *arln_create();
 void displayNodeValue(HNodePtr node);
 void resize(ArrayListNodes *list);
+void resize_helper(TreeNodePtr bin, ArrayListNodes *newList);
 
 int main(void)
 {
@@ -38,6 +40,11 @@ int main(void)
     hashmap_insert_any(list, "abc", INT, &ins1);
     hashmap_insert_any(list, "def", STRING, ins2);
     hashmap_insert_any(list, "ghi", DOUBLE, &ins3);
+    hashmap_insert_any(list, "sdf", DOUBLE, &ins3);
+    hashmap_insert_any(list, "jkl", DOUBLE, &ins3);
+    hashmap_insert_any(list, "234", DOUBLE, &ins3);
+    hashmap_insert_any(list, "123", DOUBLE, &ins3);
+    hashmap_insert_any(list, "1234", DOUBLE, &ins3);
 
     hashmap_delete(list, "abc");
     HNodePtr res1 = hashmap_get(list, "abc");
@@ -87,11 +94,34 @@ void hashmap_delete(ArrayListNodesPtr list, char *key)
     avl_delete(treePtr, key);
 }
 
+void resize_helper(TreeNodePtr bin, ArrayListNodes *newList)
+{
+    if (bin == NULL)
+        return;
+
+    hashmap_insert_any(newList, bin->data->key, bin->data->type, bin->data->value);
+
+    resize_helper(bin->left, newList);
+    resize_helper(bin->right, newList);
+}
+
 void resize(ArrayListNodes *list)
 {
     // Create a bigger hashmap
+    ArrayListNodes *newList = malloc(sizeof(ArrayListNodes));
+    newList->size = list->size;
+    newList->capacity = list->capacity * 2;
+    newList->array = calloc(sizeof(HNode *), newList->capacity);
+
     // Insert all of the values of the old hashmap into the new one
+    for (size_t i = 0; i < list->capacity; ++i)
+    {
+        // Insert all of the values in a bin
+        resize_helper(list->array[i], newList);
+    }
+
     // Reassign the pointer to the old hashmap to the new one
+    *list = *newList;
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
@@ -103,8 +133,8 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
 
     avl_insert(&(list->array[index]), nu);
 
-    // if (list->size > list->capacity * LOAD_FACTOR) // change this
-    //     resize(list);
+    if (list->size > list->capacity * LOAD_FACTOR) // change this
+        resize(list);
 }
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
@@ -169,6 +199,19 @@ void avl_insert(TreeNodePtr *root, HNodePtr data)
 
     TreeNodePtr balanced = avl_balance_insert(*root, data);
     *root = balanced;
+}
+
+void avl_destroy(TreeNodePtr *bstPtr)
+{
+    TreeNodePtr node = *bstPtr;
+    if (node == NULL)
+        return;
+
+    avl_destroy(&(node->left));
+    avl_destroy(&(node->right));
+
+    free(node);
+    *bstPtr = NULL;
 }
 
 TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
