@@ -28,7 +28,7 @@ void avl_destroy(TreeNodePtr *bstPtr);
 HNodePtr createHNodeAny(char *key, int type, void *value);
 ArrayListNodes *arln_create();
 void displayNodeValue(HNodePtr node);
-void resize(ArrayListNodes *list);
+void resize(ArrayListNodes **listPtr);
 void resize_helper(TreeNodePtr bin, ArrayListNodes *newList);
 void hashmap_destroy(ArrayListNodes **listPtr);
 
@@ -55,6 +55,8 @@ int main(void)
     // displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
+
+    hashmap_destroy(&list);
 }
 
 void displayNodeValue(HNodePtr node)
@@ -96,7 +98,7 @@ void hashmap_destroy(ArrayListNodes **listPtr)
 
     free(list->array);
     free(list);
-    **listPtr = NULL;
+    *listPtr = NULL;
 }
 
 void hashmap_delete(ArrayListNodesPtr list, char *key)
@@ -117,8 +119,9 @@ void resize_helper(TreeNodePtr bin, ArrayListNodes *newList)
     resize_helper(bin->right, newList);
 }
 
-void resize(ArrayListNodes *list)
+void resize(ArrayListNodes **listPtr)
 {
+    ArrayListNodes *list = *listPtr;
     // Create a bigger hashmap
     ArrayListNodes *newList = malloc(sizeof(ArrayListNodes));
     newList->size = list->size;
@@ -133,8 +136,11 @@ void resize(ArrayListNodes *list)
     }
 
     // Reassign the pointer to the old hashmap to the new one
+    printf("%p\n", list);
     hashmap_destroy(&list);
-    *list = *newList;
+    printf("%p\n", list);
+    printf("Reassigning list\n");
+    **listPtr = *newList;
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
@@ -147,7 +153,7 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
     avl_insert(&(list->array[index]), nu);
 
     if (list->size > list->capacity * LOAD_FACTOR) // change this
-        resize(list);
+        resize(&list);
 }
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
