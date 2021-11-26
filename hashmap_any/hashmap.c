@@ -25,32 +25,114 @@ TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data);
 TreeNodePtr avl_balance_delete(TreeNodePtr bst);
 TreeNodePtr avl_find(TreeNodePtr bst, char *key);
 HNodePtr createHNodeAny(char *key, int type, void *value);
-ArrayListNodes *arln_create();
+ArrayListNodes *arln_create(size_t capacity);
 void displayNodeValue(HNodePtr node);
-void resize(ArrayListNodes *list);
+void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);
+void avl_destroy(TreeNodePtr *bst);
+void hashmap_destroy(ArrayListNodesPtr list);
 
 int main(void)
 {
-    ArrayListNodesPtr list = arln_create();
+    ArrayListNodesPtr list = arln_create(INITIAL_CAPACITY);
     int ins1 = 1;
-    char *ins2 = "Ganning";
-    double ins3 = 3.14;
+    int ins2 = 2;
+    int ins3 = 3;
+    int ins4 = 4;
+    int ins5 = 5;
     hashmap_insert_any(list, "abc", INT, &ins1);
-    hashmap_insert_any(list, "def", STRING, ins2);
-    hashmap_insert_any(list, "ghi", DOUBLE, &ins3);
+    hashmap_insert_any(list, "def", INT, &ins2);
+    hashmap_insert_any(list, "ghi", INT, &ins3);
 
-    hashmap_delete(list, "abc");
     HNodePtr res1 = hashmap_get(list, "abc");
     HNodePtr res2 = hashmap_get(list, "def");
     HNodePtr res3 = hashmap_get(list, "ghi");
 
-    // displayNodeValue(res1);
+    displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
+    hashmap_destroy(list);
+
+    return 0;
+}
+
+void hashmap_destroy(ArrayListNodesPtr list)
+{
+    for (size_t i = 0; i < list->capacity; i++)
+    {
+        TreeNodePtr node = list->array[i];
+
+        if (node != NULL)
+        {
+            free(node->data);
+            avl_destroy(&node);
+        }
+    }
+    free(list->array);
+    free(list);
+}
+
+void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_capacity)
+{
+    if (bst == NULL)
+        return;
+    hashmap_resize_helper(newArray, bst->left, new_capacity);
+    hashmap_resize_helper(newArray, bst->right, new_capacity);
+    printf("inserting %s into new tree\n", bst->data->key);
+    HNodePtr node = bst->data;
+    size_t hash = hashmap_hash(node->key, new_capacity);
+    avl_insert(&(newArray[hash]), node);
+}
+
+void free_list(ArrayListNodesPtr list)
+{
+    for (size_t i = 0; i < list->capacity; i++)
+    {
+        TreeNodePtr node = list->array[i];
+        if (node != NULL)
+        {
+            avl_destroy(&node);
+        }
+    }
+    free(list->array);
+}
+
+void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
+{
+    TreeNodePtr *newArray = (TreeNodePtr *)calloc(sizeof(TreeNodePtr), new_capacity);
+    for (size_t i = 0; i < list->capacity; i++)
+        newArray[i] = NULL;
+
+    for (size_t i = 0; i < list->capacity; i++)
+    {
+        if (list->array[i] != NULL)
+        {
+            // list->array[i] is a TreeNodePtr
+            TreeNodePtr node = list->array[i];
+            hashmap_resize_helper(newArray, node, new_capacity);
+        }
+    }
+
+    free_list(list);
+    list->array = newArray;
+    list->capacity = new_capacity;
+}
+
+void avl_destroy(TreeNodePtr *bst)
+{
+    if (*bst == NULL)
+        return;
+    avl_destroy(&((*bst)->left));
+    avl_destroy(&((*bst)->right));
+    free(*bst);
+    *bst = NULL;
 }
 
 void displayNodeValue(HNodePtr node)
 {
+    if (node == NULL)
+    {
+        return;
+    }
     switch (node->type)
     {
     case INT:
@@ -68,12 +150,12 @@ void displayNodeValue(HNodePtr node)
     };
 }
 
-ArrayListNodes *arln_create()
+ArrayListNodes *arln_create(size_t capacity)
 {
     ArrayListNodes *list = malloc(sizeof(ArrayListNodes));
     list->size = 0;
-    list->capacity = INITIAL_SIZE;
-    list->array = calloc(sizeof(HNode *), INITIAL_SIZE);
+    list->capacity = capacity;
+    list->array = calloc(sizeof(HNode *), list->capacity);
     // set all the pointers to NULL
     for (size_t i = 0; i < list->capacity; i++)
         list->array[i] = NULL;
@@ -89,15 +171,16 @@ void hashmap_delete(ArrayListNodesPtr list, char *key)
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
+    if (list->size > list->capacity * LOAD_FACTOR) // change this
+        hashmap_resize(list, list->capacity * 2);
+
     size_t index = hashmap_hash(key, list->capacity);
+    // printf("hashindex of %s is %zu\n", key, index);
     list->size++;
     HNodePtr nu = createHNodeAny(key, type, value);
     // nu is now the data that we want to insert into the tree
 
     avl_insert(&(list->array[index]), nu);
-
-    // if (list->size > list->capacity * LOAD_FACTOR) // change this
-    //     resize(list);
 }
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)

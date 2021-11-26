@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define INITIAL_SIZE 1
+#define INITIAL_CAPACITY 2
 #define LOAD_FACTOR 0.75
 
 typedef struct hash_node
