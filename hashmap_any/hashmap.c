@@ -11,7 +11,6 @@ size_t hashmap_hash(char *str, size_t size);
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value);
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key);
 void hashmap_delete(ArrayListNodesPtr list, char *key);
-
 void avl_insert(TreeNodePtr *root, HNodePtr data);
 void avl_delete(TreeNodePtr *root, char *key);
 void avl_print(TreeNodePtr bst);
@@ -39,17 +38,24 @@ int main(void)
     int ins3 = 3;
     int ins4 = 4;
     int ins5 = 5;
-    hashmap_insert_any(list, "abc", INT, &ins1);
-    hashmap_insert_any(list, "def", INT, &ins2);
-    hashmap_insert_any(list, "ghi", INT, &ins3);
+    hashmap_insert_any(list, "name", INT, &ins1);
+    hashmap_insert_any(list, "age", INT, &ins2);
+    hashmap_insert_any(list, "grade", INT, &ins3);
+    hashmap_insert_any(list, "afc", INT, &ins4);
+    hashmap_insert_any(list, "dave", INT, &ins5);
+    hashmap_delete(list, "dave");
 
-    HNodePtr res1 = hashmap_get(list, "abc");
-    HNodePtr res2 = hashmap_get(list, "def");
-    HNodePtr res3 = hashmap_get(list, "ghi");
+    HNodePtr res1 = hashmap_get(list, "name");
+    HNodePtr res2 = hashmap_get(list, "age");
+    HNodePtr res3 = hashmap_get(list, "grade");
+    HNodePtr res4 = hashmap_get(list, "afc");
+    HNodePtr res5 = hashmap_get(list, "dave");
 
     displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
+    displayNodeValue(res4);
+
     hashmap_destroy(list);
 
     return 0;
@@ -77,7 +83,7 @@ void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_ca
         return;
     hashmap_resize_helper(newArray, bst->left, new_capacity);
     hashmap_resize_helper(newArray, bst->right, new_capacity);
-    printf("inserting %s into new tree\n", bst->data->key);
+    // printf("inserting %s into new tree\n", bst->data->key);
     HNodePtr node = bst->data;
     size_t hash = hashmap_hash(node->key, new_capacity);
     avl_insert(&(newArray[hash]), node);
@@ -175,8 +181,9 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
         hashmap_resize(list, list->capacity * 2);
 
     size_t index = hashmap_hash(key, list->capacity);
-    // printf("hashindex of %s is %zu\n", key, index);
+    printf("hashindex of %s is %zu\n", key, index);
     list->size++;
+    printf("size: %zu\n", list->size);
     HNodePtr nu = createHNodeAny(key, type, value);
     // nu is now the data that we want to insert into the tree
 
@@ -385,25 +392,37 @@ size_t height(TreeNodePtr node)
 TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data)
 {
     // code below runs after we have inserted a node
+    // if (bst->right == NULL || bst->left == NULL)
+    // {
+    //     return bst;
+    // }
     bst->height = 1 + max(height(bst->left), height(bst->right));
     int balance = avl_get_balance(bst);
 
-    /// asdfasf
-
-    if (balance > 1 && strcmp(data->key, bst->left->data->key) > 0) // left heavy
-        avl_right_rotate(&bst);
-    if (balance < -1 && strcmp(data->key, bst->right->data->key) > 0) // right heavy
-        avl_left_rotate(&bst);
-
-    if (balance > 1 && strcmp(data->key, bst->left->data->key) < 0) // left heavy
+    // printf("balance of %s: %d\n", data->key, balance);
+    if (bst->left != NULL)
     {
-        avl_left_rotate(&(bst->left));
-        avl_right_rotate(&bst);
+        if (balance > 1 && strcmp(data->key, bst->left->data->key) > 0) // left heavy
+        {
+            avl_right_rotate(&bst);
+        }
+        else if (balance > 1 && strcmp(data->key, bst->left->data->key) < 0) // left heavy
+        {
+            avl_left_rotate(&(bst->left));
+            avl_right_rotate(&bst);
+        }
+        else if (balance < -1 && strcmp(data->key, bst->left->data->key) < 0) // right heavy
+        {
+            avl_right_rotate(&(bst->right));
+            avl_left_rotate(&bst);
+        }
     }
-    if (balance < -1 && strcmp(data->key, bst->left->data->key) < 0) // right heavy
+    else if (bst->right != NULL)
     {
-        avl_right_rotate(&(bst->right));
-        avl_left_rotate(&bst);
+        if (balance < -1 && strcmp(data->key, bst->right->data->key) > 0) // right heavy
+        {
+            avl_left_rotate(&bst);
+        }
     }
 
     return bst;
