@@ -39,6 +39,8 @@ int main(void)
     int ins3 = 3;
     int ins4 = 4;
     int ins5 = 5;
+
+    printf("Inserts\n");
     hashmap_insert_any(list, "abc", INT, &ins1);
     hashmap_insert_any(list, "def", INT, &ins2);
     hashmap_insert_any(list, "ghi", INT, &ins3);
@@ -48,6 +50,13 @@ int main(void)
     hashmap_insert_any(list, "5", INT, &ins3);
     hashmap_insert_any(list, "8", INT, &ins3);
     hashmap_insert_any(list, "9", INT, &ins3);
+
+    printf("\n\nDeletes\n");
+    hashmap_delete(list, "3");
+    hashmap_delete(list, "9");
+    hashmap_delete(list, "1");
+    hashmap_delete(list, "2");
+    hashmap_delete(list, "8");
 
     HNodePtr res1 = hashmap_get(list, "abc");
     HNodePtr res2 = hashmap_get(list, "def");
@@ -104,10 +113,12 @@ void free_list(ArrayListNodesPtr list)
 
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
 {
+    // printf("Initialized new array\n");
     TreeNodePtr *newArray = (TreeNodePtr *)calloc(sizeof(TreeNodePtr), new_capacity);
-    for (size_t i = 0; i < list->capacity; i++)
+    for (size_t i = 0; i < new_capacity; i++)
         newArray[i] = NULL;
 
+    // printf("Filling array\n");
     for (size_t i = 0; i < list->capacity; i++)
     {
         if (list->array[i] != NULL)
@@ -118,7 +129,10 @@ void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
         }
     }
 
+    // printf("Freeing old array\n");
     free_list(list);
+
+    // printf("Assigning new to old\n");
     list->array = newArray;
     list->capacity = new_capacity;
 }
@@ -170,15 +184,20 @@ ArrayListNodes *arln_create(size_t capacity)
 
 void hashmap_delete(ArrayListNodesPtr list, char *key)
 {
+    printf("%f\n", (double)list->size / list->capacity);
+    if (list->size < list->capacity * LOAD_FACTOR_LOWER) // change this
+        hashmap_resize(list, list->capacity / 2);
+
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr *treePtr = &(list->array[index]);
     avl_delete(treePtr, key);
+    --list->size;
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
     printf("%f\n", (double)list->size / list->capacity);
-    if (list->size > list->capacity * LOAD_FACTOR) // change this
+    if (list->size > list->capacity * LOAD_FACTOR_UPPER) // change this
         hashmap_resize(list, list->capacity * 2);
 
     size_t index = hashmap_hash(key, list->capacity);
