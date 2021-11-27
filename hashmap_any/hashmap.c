@@ -42,6 +42,12 @@ int main(void)
     hashmap_insert_any(list, "abc", INT, &ins1);
     hashmap_insert_any(list, "def", INT, &ins2);
     hashmap_insert_any(list, "ghi", INT, &ins3);
+    hashmap_insert_any(list, "1", INT, &ins3);
+    hashmap_insert_any(list, "2", INT, &ins3);
+    hashmap_insert_any(list, "3", INT, &ins3);
+    hashmap_insert_any(list, "5", INT, &ins3);
+    hashmap_insert_any(list, "8", INT, &ins3);
+    hashmap_insert_any(list, "9", INT, &ins3);
 
     HNodePtr res1 = hashmap_get(list, "abc");
     HNodePtr res2 = hashmap_get(list, "def");
@@ -77,7 +83,7 @@ void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_ca
         return;
     hashmap_resize_helper(newArray, bst->left, new_capacity);
     hashmap_resize_helper(newArray, bst->right, new_capacity);
-    printf("inserting %s into new tree\n", bst->data->key);
+    // printf("inserting %s into new tree\n", bst->data->key);
     HNodePtr node = bst->data;
     size_t hash = hashmap_hash(node->key, new_capacity);
     avl_insert(&(newArray[hash]), node);
@@ -171,6 +177,7 @@ void hashmap_delete(ArrayListNodesPtr list, char *key)
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
+    printf("%f\n", (double)list->size / list->capacity);
     if (list->size > list->capacity * LOAD_FACTOR) // change this
         hashmap_resize(list, list->capacity * 2);
 

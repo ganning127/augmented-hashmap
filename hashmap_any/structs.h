@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define INITIAL_CAPACITY 2
-#define LOAD_FACTOR 0.75
+#define LOAD_FACTOR 0.66
 
 typedef struct hash_node
 {
