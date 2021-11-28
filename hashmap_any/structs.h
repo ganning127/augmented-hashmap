@@ -4,6 +4,7 @@
 #define INITIAL_CAPACITY 2
 #define LOAD_FACTOR_UPPER 0.66
 #define LOAD_FACTOR_LOWER 0.4
+#define LOAD_FACTOR 0.75
 
 typedef struct hash_node
 {
