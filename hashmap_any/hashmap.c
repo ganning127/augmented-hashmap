@@ -47,6 +47,18 @@ int main(void)
     hashmap_insert_any(list, "letter_grade", CHAR, &ins4);
     hashmap_insert_any(list, "id", ULONG, &ins5);
 
+    hashmap_delete(list, "name");
+    hashmap_delete(list, "age");
+    hashmap_delete(list, "grade");
+    hashmap_delete(list, "letter_grade");
+    hashmap_delete(list, "id");
+
+    hashmap_insert_any(list, "name", STRING, ins1);
+    hashmap_insert_any(list, "age", UINT, &ins2);
+    hashmap_insert_any(list, "grade", DOUBLE, &ins3);
+    hashmap_insert_any(list, "letter_grade", CHAR, &ins4);
+    hashmap_insert_any(list, "id", ULONG, &ins5);
+
     HNodePtr res1 = hashmap_get(list, "name");
     HNodePtr res2 = hashmap_get(list, "age");
     HNodePtr res3 = hashmap_get(list, "grade");
@@ -186,12 +198,21 @@ void hashmap_delete(ArrayListNodesPtr list, char *key)
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr *treePtr = &(list->array[index]);
     avl_delete(treePtr, key);
+    list->size--;
+    if (list->size < list->capacity * LOAD_FACTOR_LOWER) // change this
+    {
+        printf("shrinking hashmap to be size: %zu\n", list->capacity / 2);
+        hashmap_resize(list, list->capacity / 2);
+    }
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
-    if (list->size > list->capacity * LOAD_FACTOR) // change this
+    if (list->size > list->capacity * LOAD_FACTOR_UPPER) // change this
+    {
         hashmap_resize(list, list->capacity * 2);
+        printf("expanding hashmap to be size: %zu\n", list->capacity * 2);
+    }
 
     size_t index = hashmap_hash(key, list->capacity);
     // printf("hashindex of %s is %zu\n", key, index);
