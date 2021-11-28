@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 struct Node
 {
     int key;
@@ -7,6 +8,7 @@ struct Node
     struct Node *rgt;
     int height;
 };
+void print_bst(struct Node *bst);
 int max(int a, int b);
 int height(struct Node *N)
 {
@@ -64,13 +66,25 @@ struct Node *insert(struct Node *node, int key)
         node->rgt = insert(node->rgt, key);
     else
         return node;
+
+    puts("before balance");
+    print_bst(node);
+
     node->height = 1 + max(height(node->lft),
                            height(node->rgt));
     int balance = getBalance(node);
+    printf("Balance: %d\n", balance);
+
     if (balance > 1 && key < node->lft->key)
+    {
+        puts("running rgtRotate");
         return rgtRotate(node);
+    }
     if (balance < -1 && key > node->rgt->key)
+    {
+        puts("running lftRotate");
         return lftRotate(node);
+    }
     if (balance > 1 && key > node->lft->key)
     {
         node->lft = lftRotate(node->lft);
@@ -78,9 +92,11 @@ struct Node *insert(struct Node *node, int key)
     }
     if (balance < -1 && key < node->rgt->key)
     {
+        puts("running double rotate");
         node->rgt = rgtRotate(node->rgt);
         return lftRotate(node);
     }
+    puts("---------");
     return node;
 }
 struct Node *minValueNode(struct Node *node)
@@ -154,24 +170,14 @@ void preOrder(struct Node *base)
     }
 }
 
-void print_bst(struct Node *bst);
-
 int main()
 {
     struct Node *base = NULL;
 
-    base = insert(base, 1);
-    base = insert(base, 2);
     base = insert(base, 3);
-    base = insert(base, 4);
     base = insert(base, 5);
-    base = insert(base, 6);
-    base = insert(base, 7);
-    base = insert(base, 8);
+    base = insert(base, 4);
 
-    base = deleteNode(base, 1);
-    base = deleteNode(base, 2);
-    base = deleteNode(base, 3);
     print_bst(base);
     printf("\n");
     return 0;
