@@ -5,6 +5,8 @@ enum
     STRING = 2,
     DOUBLE = 3,
     CHAR = 4,
+    UINT = 5,
+    ULONG = 6,
 };
 
 size_t hashmap_hash(char *str, size_t size);
@@ -28,48 +30,50 @@ ArrayListNodes *arln_create(size_t capacity);
 void displayNodeValue(HNodePtr node);
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);
 void avl_destroy(TreeNodePtr *bst);
-void hashmap_destroy(ArrayListNodesPtr list);
+void hashmap_destroy(ArrayListNodesPtr *listPtr);
 
 int main(void)
 {
     ArrayListNodesPtr list = arln_create(INITIAL_CAPACITY);
-    int ins1 = 1;
-    int ins2 = 2;
-    int ins3 = 3;
-    int ins4 = 4;
-    int ins5 = 5;
-    hashmap_insert_any(list, "name", INT, &ins1);
-    hashmap_insert_any(list, "age", INT, &ins2);
-    hashmap_insert_any(list, "grade", INT, &ins3);
-    hashmap_insert_any(list, "afc", INT, &ins4);
-    hashmap_insert_any(list, "dave", INT, &ins5);
-    hashmap_delete(list, "dave");
+    char *ins1 = "Ganning";
+    unsigned int ins2 = 16;
+    double ins3 = 94.53;
+    char ins4 = 'A';
+    unsigned long ins5 = 123456789;
+
+    hashmap_insert_any(list, "name", STRING, ins1);
+    hashmap_insert_any(list, "age", UINT, &ins2);
+    hashmap_insert_any(list, "grade", DOUBLE, &ins3);
+    hashmap_insert_any(list, "letter_grade", CHAR, &ins4);
+    hashmap_insert_any(list, "id", ULONG, &ins5);
 
     HNodePtr res1 = hashmap_get(list, "name");
     HNodePtr res2 = hashmap_get(list, "age");
     HNodePtr res3 = hashmap_get(list, "grade");
-    HNodePtr res4 = hashmap_get(list, "afc");
-    HNodePtr res5 = hashmap_get(list, "dave");
+    HNodePtr res4 = hashmap_get(list, "letter_grade");
+    HNodePtr res5 = hashmap_get(list, "id");
 
     displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
     displayNodeValue(res4);
+    displayNodeValue(res5);
 
-    hashmap_destroy(list);
+    hashmap_destroy(&list);
 
     return 0;
 }
 
-void hashmap_destroy(ArrayListNodesPtr list)
+void hashmap_destroy(ArrayListNodesPtr *listPtr)
 {
+    ArrayListNodesPtr list = *listPtr;
     for (size_t i = 0; i < list->capacity; i++)
     {
         TreeNodePtr node = list->array[i];
 
         if (node != NULL)
         {
-            free(node->data);
+            // free(node->data);
             avl_destroy(&node);
         }
     }
@@ -83,9 +87,10 @@ void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_ca
         return;
     hashmap_resize_helper(newArray, bst->left, new_capacity);
     hashmap_resize_helper(newArray, bst->right, new_capacity);
-    // printf("inserting %s into new tree\n", bst->data->key);
-    HNodePtr node = bst->data;
+
+    HNodePtr node = createHNodeAny(bst->data->key, bst->data->type, bst->data->value);
     size_t hash = hashmap_hash(node->key, new_capacity);
+    // printf("new hash of %s is %zu\n", node->key, hash);
     avl_insert(&(newArray[hash]), node);
 }
 
@@ -105,8 +110,8 @@ void free_list(ArrayListNodesPtr list)
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
 {
     TreeNodePtr *newArray = (TreeNodePtr *)calloc(sizeof(TreeNodePtr), new_capacity);
-    for (size_t i = 0; i < list->capacity; i++)
-        newArray[i] = NULL;
+    // for (size_t i = 0; i < list->capacity; i++)
+    //     newArray[i] = NULL;
 
     for (size_t i = 0; i < list->capacity; i++)
     {
@@ -129,7 +134,9 @@ void avl_destroy(TreeNodePtr *bst)
         return;
     avl_destroy(&((*bst)->left));
     avl_destroy(&((*bst)->right));
+    free((*bst)->data);
     free(*bst);
+
     *bst = NULL;
 }
 
@@ -153,6 +160,12 @@ void displayNodeValue(HNodePtr node)
     case CHAR:
         printf("%c\n", *(char *)node->value);
         break;
+    case UINT:
+        printf("%u\n", *(unsigned int *)node->value);
+        break;
+    case ULONG:
+        printf("%lu\n", *(unsigned long *)node->value);
+        break;
     };
 }
 
@@ -163,8 +176,8 @@ ArrayListNodes *arln_create(size_t capacity)
     list->capacity = capacity;
     list->array = calloc(sizeof(HNode *), list->capacity);
     // set all the pointers to NULL
-    for (size_t i = 0; i < list->capacity; i++)
-        list->array[i] = NULL;
+    // for (size_t i = 0; i < list->capacity; i++)
+    //     list->array[i] = NULL;
     return list;
 }
 
@@ -181,13 +194,12 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
         hashmap_resize(list, list->capacity * 2);
 
     size_t index = hashmap_hash(key, list->capacity);
-    printf("hashindex of %s is %zu\n", key, index);
+    // printf("hashindex of %s is %zu\n", key, index);
     list->size++;
-    printf("size: %zu\n", list->size);
+    // printf("size: %zu\n", list->size);
     HNodePtr nu = createHNodeAny(key, type, value);
-    // nu is now the data that we want to insert into the tree
 
-    avl_insert(&(list->array[index]), nu);
+    avl_insert(&(list->array[index]), nu); // nu is now the data that we want to insert into the tree
 }
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
@@ -233,7 +245,7 @@ HNodePtr createHNodeAny(char *key, int type, void *value)
 void avl_insert(TreeNodePtr *root, HNodePtr data)
 {
     TreeNodePtr bst = *root;
-    if (!bst)
+    if (bst == NULL)
     {
         // we have gotten to an empty space, insert here
         TreeNodePtr node = malloc(sizeof(TreeNode));
@@ -246,6 +258,8 @@ void avl_insert(TreeNodePtr *root, HNodePtr data)
     {
         if (strcmp(bst->data->key, data->key) > 0)
             avl_insert(&(bst->left), data);
+        else if (strcmp(bst->data->key, data->key) == 0)
+            return; // we don't want to insert a duplicate
         else
             avl_insert(&(bst->right), data);
     }
@@ -294,10 +308,6 @@ void avl_right_rotate(TreeNodePtr *bst)
 }
 void avl_print(TreeNodePtr bst)
 {
-    /*
-        Avg, Best, Worst: O(n)
-            You need to go through each node in order to print it, resulting in a time complexity of O(n).
-    */
 
     static unsigned int depth = 0; // this line only runs once
     if (bst == NULL)
@@ -345,6 +355,7 @@ void avl_delete(TreeNodePtr *root, char *key)
         }
 
         *root = newPtr;
+        free(bst->data);
         free(bst);
     }
 
@@ -392,37 +403,32 @@ size_t height(TreeNodePtr node)
 TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data)
 {
     // code below runs after we have inserted a node
-    // if (bst->right == NULL || bst->left == NULL)
-    // {
-    //     return bst;
-    // }
     bst->height = 1 + max(height(bst->left), height(bst->right));
     int balance = avl_get_balance(bst);
 
-    // printf("balance of %s: %d\n", data->key, balance);
-    if (bst->left != NULL)
+    if (balance > 1 && strcmp(data->key, bst->left->data->key) < 0) // left heavy
     {
-        if (balance > 1 && strcmp(data->key, bst->left->data->key) > 0) // left heavy
-        {
-            avl_right_rotate(&bst);
-        }
-        else if (balance > 1 && strcmp(data->key, bst->left->data->key) < 0) // left heavy
-        {
-            avl_left_rotate(&(bst->left));
-            avl_right_rotate(&bst);
-        }
-        else if (balance < -1 && strcmp(data->key, bst->left->data->key) < 0) // right heavy
-        {
-            avl_right_rotate(&(bst->right));
-            avl_left_rotate(&bst);
-        }
+        avl_right_rotate(&bst);
+        return bst;
     }
-    else if (bst->right != NULL)
+    if (balance < -1 && strcmp(data->key, bst->right->data->key) > 0) // right heavy
     {
-        if (balance < -1 && strcmp(data->key, bst->right->data->key) > 0) // right heavy
-        {
-            avl_left_rotate(&bst);
-        }
+        avl_left_rotate(&bst);
+        return bst;
+    }
+
+    if (balance > 1 && strcmp(data->key, bst->left->data->key) > 0) // left heavy
+    {
+        avl_left_rotate(&(bst->left));
+        avl_right_rotate(&bst);
+        return bst;
+    }
+
+    if (balance < -1 && strcmp(data->key, bst->right->data->key) < 0) // right heavy
+    {
+        avl_right_rotate(&(bst->right));
+        avl_left_rotate(&bst);
+        return bst;
     }
 
     return bst;
@@ -441,7 +447,7 @@ TreeNodePtr avl_balance_delete(TreeNodePtr bst)
 
     if (balance_root > 1 && balance_left >= 0)
         avl_right_rotate(&bst);
-    if (balance_root > 1 && balance_right < 0)
+    if (balance_root > 1 && balance_left < 0)
     {
         avl_left_rotate(&(bst->left));
         avl_right_rotate(&bst);
