@@ -35,6 +35,7 @@ void hashmap_destroy(ArrayListNodesPtr *listPtr);
 int main(void)
 {
     ArrayListNodesPtr list = arln_create(INITIAL_CAPACITY);
+
     char *ins1 = "Ganning";
     unsigned int ins2 = 16;
     double ins3 = 94.53;
@@ -52,6 +53,7 @@ int main(void)
     HNodePtr res3 = hashmap_get(list, "grade");
     HNodePtr res4 = hashmap_get(list, "letter_grade");
     HNodePtr res5 = hashmap_get(list, "id");
+
 
     displayNodeValue(res1);
     displayNodeValue(res2);
@@ -109,10 +111,12 @@ void free_list(ArrayListNodesPtr list)
 
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
 {
+    // printf("Initialized new array\n");
     TreeNodePtr *newArray = (TreeNodePtr *)calloc(sizeof(TreeNodePtr), new_capacity);
     // for (size_t i = 0; i < list->capacity; i++)
     //     newArray[i] = NULL;
 
+    // printf("Filling array\n");
     for (size_t i = 0; i < list->capacity; i++)
     {
         if (list->array[i] != NULL)
@@ -123,7 +127,10 @@ void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
         }
     }
 
+    // printf("Freeing old array\n");
     free_list(list);
+
+    // printf("Assigning new to old\n");
     list->array = newArray;
     list->capacity = new_capacity;
 }
@@ -183,14 +190,20 @@ ArrayListNodes *arln_create(size_t capacity)
 
 void hashmap_delete(ArrayListNodesPtr list, char *key)
 {
+    printf("%f\n", (double)list->size / list->capacity);
+    if (list->size < list->capacity * LOAD_FACTOR_LOWER) // change this
+        hashmap_resize(list, list->capacity / 2);
+
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr *treePtr = &(list->array[index]);
     avl_delete(treePtr, key);
+    --list->size;
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
-    if (list->size > list->capacity * LOAD_FACTOR) // change this
+    printf("%f\n", (double)list->size / list->capacity);
+    if (list->size > list->capacity * LOAD_FACTOR_UPPER) // change this
         hashmap_resize(list, list->capacity * 2);
 
     size_t index = hashmap_hash(key, list->capacity);
