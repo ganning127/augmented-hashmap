@@ -142,6 +142,7 @@ void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
 
 void avl_destroy(TreeNodePtr *bst)
 {
+    // free an avl_tree
     if (*bst == NULL)
         return;
     avl_destroy(&((*bst)->left));
@@ -154,10 +155,9 @@ void avl_destroy(TreeNodePtr *bst)
 
 void displayNodeValue(HNodePtr node)
 {
+    // display a node value
     if (node == NULL)
-    {
         return;
-    }
     switch (node->type)
     {
     case INT:
@@ -183,36 +183,32 @@ void displayNodeValue(HNodePtr node)
 
 ArrayListNodes *arln_create(size_t capacity)
 {
+    // create array of TreeNodePtrs that contains each an avl tree
     ArrayListNodes *list = malloc(sizeof(ArrayListNodes));
     list->size = 0;
     list->capacity = capacity;
-    list->array = calloc(sizeof(HNode *), list->capacity);
-    // set all the pointers to NULL
-    // for (size_t i = 0; i < list->capacity; i++)
-    //     list->array[i] = NULL;
+    list->array = calloc(sizeof(TreeNodePtr), list->capacity);
     return list;
 }
 
 void hashmap_delete(ArrayListNodesPtr list, char *key)
 {
+    // delete node with key
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr *treePtr = &(list->array[index]);
     avl_delete(treePtr, key);
     list->size--;
     if (list->size < list->capacity * LOAD_FACTOR_LOWER) // change this
     {
-        printf("shrinking hashmap to be size: %zu\n", list->capacity / 2);
         hashmap_resize(list, list->capacity / 2);
     }
 }
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
+    // TODO: check if key already exists, and if it does, just update the key with the new value
     if (list->size > list->capacity * LOAD_FACTOR_UPPER) // change this
-    {
         hashmap_resize(list, list->capacity * 2);
-        printf("expanding hashmap to be size: %zu\n", list->capacity * 2);
-    }
 
     size_t index = hashmap_hash(key, list->capacity);
     // printf("hashindex of %s is %zu\n", key, index);
@@ -225,6 +221,7 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
 {
+    // get node with a key
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr bst = list->array[index];
     TreeNodePtr node = avl_find(bst, key);
@@ -234,9 +231,7 @@ HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
         return NULL; // node was not found
     }
     else
-    {
         return node->data;
-    }
 }
 
 size_t hashmap_hash(char *str, size_t size)
@@ -255,6 +250,7 @@ size_t hashmap_hash(char *str, size_t size)
 
 HNodePtr createHNodeAny(char *key, int type, void *value)
 {
+    // create HNode
     HNodePtr node = malloc(sizeof(HNode));
     node->key = key;
     node->type = type;
@@ -265,6 +261,7 @@ HNodePtr createHNodeAny(char *key, int type, void *value)
 // important functions
 void avl_insert(TreeNodePtr *root, HNodePtr data)
 {
+    // insert into avl_tree bucket
     TreeNodePtr bst = *root;
     if (bst == NULL)
     {
@@ -291,17 +288,16 @@ void avl_insert(TreeNodePtr *root, HNodePtr data)
 
 TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
 {
-    //
+    // find node to succeed a node in avl_delete()
     TreeNodePtr tree = *treePtr;
     if (tree->left == NULL)
-    {
         return treePtr;
-    }
     return avl_successor(&(tree->left));
 }
 
 void avl_left_rotate(TreeNodePtr *bst)
 {
+    // left rotate in avl tree balance
     TreeNodePtr bst_deref = *bst;
     TreeNodePtr bst_right = bst_deref->right;
     TreeNodePtr bst_right_left = bst_right->left;
@@ -316,6 +312,7 @@ void avl_left_rotate(TreeNodePtr *bst)
 }
 void avl_right_rotate(TreeNodePtr *bst)
 {
+    // right rotate in avl tree balance
     TreeNodePtr bst_deref = *bst;
     TreeNodePtr bst_left = bst_deref->left;
     TreeNodePtr bst_left_right = bst_left->right;
@@ -329,7 +326,7 @@ void avl_right_rotate(TreeNodePtr *bst)
 }
 void avl_print(TreeNodePtr bst)
 {
-
+    // print avl tree horizontally
     static unsigned int depth = 0; // this line only runs once
     if (bst == NULL)
         return;
@@ -348,6 +345,7 @@ void avl_print(TreeNodePtr bst)
 
 void avl_delete(TreeNodePtr *root, char *key)
 {
+    // delete node in AVL tree bucket
     TreeNodePtr bst = *root;
     if (!bst) // if the bst is empty, we can't delete anything
         return;
@@ -370,10 +368,8 @@ void avl_delete(TreeNodePtr *root, char *key)
             newPtr->left = bst->left;
         }
         else
-        {
             // no children or one child
             newPtr = bst->left != NULL ? bst->left : bst->right;
-        }
 
         *root = newPtr;
         free(bst->data);
@@ -386,6 +382,7 @@ void avl_delete(TreeNodePtr *root, char *key)
 
 TreeNodePtr avl_find(TreeNodePtr bst, char *key)
 {
+    // find the node in a bucket
     if (!bst)
         return NULL;
     else if (strcmp(bst->data->key, key) < 0)
@@ -398,7 +395,6 @@ TreeNodePtr avl_find(TreeNodePtr bst, char *key)
         return NULL;
 }
 
-// helper functions
 int max(int a, int b)
 {
     // returns the max value of two numbers
@@ -467,18 +463,26 @@ TreeNodePtr avl_balance_delete(TreeNodePtr bst)
     int balance_right = avl_get_balance(bst->right);
 
     if (balance_root > 1 && balance_left >= 0)
+    {
         avl_right_rotate(&bst);
+        return bst;
+    }
     if (balance_root > 1 && balance_left < 0)
     {
         avl_left_rotate(&(bst->left));
         avl_right_rotate(&bst);
+        return bst;
     }
     if (balance_root < -1 && balance_right <= 0)
+    {
         avl_left_rotate(&bst);
+        return bst;
+    }
     if (balance_root < -1 && balance_right > 0)
     {
         avl_right_rotate(&(bst->right));
         avl_left_rotate(&bst);
+        return bst;
     }
 
     return bst;
