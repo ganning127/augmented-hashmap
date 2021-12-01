@@ -7,6 +7,9 @@ enum
     CHAR = 4,
     UINT = 5,
     ULONG = 6,
+    LONG = 7,
+    SHORT = 8,
+    USHORT = 9,
 };
 
 size_t hashmap_hash(char *str, size_t size);
