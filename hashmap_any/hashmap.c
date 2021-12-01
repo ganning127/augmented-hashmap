@@ -34,6 +34,13 @@ void displayNodeValue(HNodePtr node);
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);
 void avl_destroy(TreeNodePtr *bst);
 void hashmap_destroy(ArrayListNodesPtr *listPtr);
+double getLoadFactor(ArrayListNodesPtr list);
+
+/*
+Time Complexity Analysis
+
+
+*/
 
 int main(void)
 {
@@ -45,6 +52,7 @@ int main(void)
     unsigned long ins5 = 123456789;
 
     hashmap_insert_any(list, "name", STRING, ins1);
+
     hashmap_insert_any(list, "age", UINT, &ins2);
     hashmap_insert_any(list, "grade", DOUBLE, &ins3);
     hashmap_insert_any(list, "letter_grade", CHAR, &ins4);
@@ -81,6 +89,20 @@ int main(void)
 
 void hashmap_destroy(ArrayListNodesPtr *listPtr)
 {
+    /*
+    hashmap_destroy()
+            Worst Case: O(n)
+                - n is total number of nodes in the hashmap
+                we need to go to each node in the hashmap and free it
+
+            Best Case: O(n)
+                - n is total number of nodes in the hashmap
+                we need to go to each node in the hashmap and free it
+
+            Average Case: O(n)
+                - n is total number of nodes in the hashmap
+                we need to go to each node in the hashmap and free it
+    */
     ArrayListNodesPtr list = *listPtr;
     for (size_t i = 0; i < list->capacity; i++)
     {
@@ -98,13 +120,19 @@ void hashmap_destroy(ArrayListNodesPtr *listPtr)
 
 void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_capacity)
 {
+
     if (bst == NULL)
         return;
+
     hashmap_resize_helper(newArray, bst->left, new_capacity);
     hashmap_resize_helper(newArray, bst->right, new_capacity);
 
+    // printf("%s: %d\n", bst->data->key, *(int *)bst->data->value);
+
     HNodePtr node = createHNodeAny(bst->data->key, bst->data->type, bst->data->value);
+    printf("node key: %s, capacity: %zu\n", node->key, new_capacity);
     size_t hash = hashmap_hash(node->key, new_capacity);
+
     // printf("new hash of %s is %zu\n", node->key, hash);
     avl_insert(&(newArray[hash]), node);
 }
@@ -125,8 +153,6 @@ void free_list(ArrayListNodesPtr list)
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
 {
     TreeNodePtr *newArray = (TreeNodePtr *)calloc(sizeof(TreeNodePtr), new_capacity);
-    // for (size_t i = 0; i < list->capacity; i++)
-    //     newArray[i] = NULL;
 
     for (size_t i = 0; i < list->capacity; i++)
     {
@@ -196,6 +222,23 @@ ArrayListNodes *arln_create(size_t capacity)
 
 void hashmap_delete(ArrayListNodesPtr list, char *key)
 {
+    /*
+        hashmap_delete()
+            Worst Case: O((nlog (n/capacity) + log (n/capacity)))
+                - n is total number of nodes in the hashmap
+                - capacity is number of buckets in the hashmap array
+                nlog(n/capacity) is beacause we need to resize the array (deleting, creating, and rehashing each node)
+                log n is because we need to insert each node into the array
+
+            Best Case: O(1)
+                occurs when there is nothing else in the avl tree at that bucket and we are deleting the root node
+
+            Average Case: O(log(n/capacity))
+                - n is total number of nodes in the hashmap
+                - capacity is number of buckets in the hashmap array
+                on average, we won't need to resize the array, and n/capacity is the number of nodes we have in a bucket
+    */
+
     // delete node with key
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr *treePtr = &(list->array[index]);
@@ -203,12 +246,35 @@ void hashmap_delete(ArrayListNodesPtr list, char *key)
     list->size--;
     if (list->size < list->capacity * LOAD_FACTOR_LOWER) // change this
     {
+        if (list->capacity <= INITIAL_CAPACITY) // cannot resize to 0
+            return;
         hashmap_resize(list, list->capacity / 2);
     }
 }
 
+double getLoadFactor(ArrayListNodesPtr list)
+{
+    return (double)list->size / list->capacity;
+}
+
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
+    /*
+        hashmap_insert_any()
+            Worst Case: O((nlog (n/capacity) + log (n/capacity)))
+                - n is total number of nodes in the hashmap
+                - capacity is number of buckets in the hashmap array
+                nlog(n/capacity) is beacause we need to resize the array (deleting, creating, and rehashing each node)
+                log n is because we need to insert each node into the array
+
+            Best Case: O(1)
+                occurs when there is nothing else in the avl tree and hashmap array initially, so we have a constant insert time
+
+            Average Case: O(log(n/capacity))
+                - n is total number of nodes in the hashmap
+                - capacity is number of buckets in the hashmap array
+                on average, we won't need to resize the array, and n/capacity is the number of nodes we have in a bucket
+    */
     // TODO: check if key already exists, and if it does, just update the key with the new value
     if (list->size > list->capacity * LOAD_FACTOR_UPPER) // change this
         hashmap_resize(list, list->capacity * 2);
@@ -224,6 +290,17 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
 {
+    /*
+        hashmap_get()
+            Worst: O(1)
+                - the maximum number of nodes in the avl tree is 8, which is a bascially-constant search time
+
+            Best: O(1)
+                - the minimum number of nodes in each avl tree (on average) is 2, which is a bascially-constant search time
+
+            Average: O(1)
+                - the average number of nodes in each avl tree is 4, which is a bascially-constant search time
+    */
     // get node with a key
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr bst = list->array[index];
