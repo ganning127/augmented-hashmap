@@ -37,7 +37,92 @@ void hashmap_destroy(ArrayListNodesPtr *listPtr);
 double getLoadFactor(ArrayListNodesPtr list);
 
 /*
+TIME Complexity Analysis
+    hashmap_get()
+        Worst: O(1)
+            - the maximum number of nodes in the avl tree is 8, which is a bascially-constant search time
 
+        Best: O(1)
+            - the minimum number of nodes in each avl tree (on average) is 2, which is a bascially-constant search time
+
+        Average: O(1)
+            - the average number of nodes in each avl tree is 4, which is a bascially-constant search time
+
+    hashmap_insert_any()
+        Worst Case: O((nlog (n/capacity) + log (n/capacity)))
+            - n is total number of nodes in the hashmap
+            - capacity is number of buckets in the hashmap array
+            nlog(n/capacity) is beacause we need to resize the array (deleting, creating, and rehashing each node)
+            log n is because we need to insert each node into the array
+
+        Best Case: O(1)
+            occurs when there is nothing else in the avl tree and hashmap array initially, so we have a constant insert time
+
+        Average Case: O(log(n/capacity))
+            - n is total number of nodes in the hashmap
+            - capacity is number of buckets in the hashmap array
+            on average, we won't need to resize the array, and n/capacity is the number of nodes we have in a bucket
+
+    hashmap_delete()
+        Worst Case: O((nlog (n/capacity) + log (n/capacity)))
+            - n is total number of nodes in the hashmap
+            - capacity is number of buckets in the hashmap array
+            nlog(n/capacity) is beacause we need to resize the array (deleting, creating, and rehashing each node)
+            log n is because we need to insert each node into the array
+
+        Best Case: O(1)
+            occurs when there is nothing else in the avl tree at that bucket and we are deleting the root node
+
+        Average Case: O(log(n/capacity))
+            - n is total number of nodes in the hashmap
+            - capacity is number of buckets in the hashmap array
+            on average, we won't need to resize the array, and n/capacity is the number of nodes we have in a bucket
+
+    hashmap_destroy()
+        Worst Case: O(n)
+            - n is total number of nodes in the hashmap
+            we need to go to each node in the hashmap and free it
+
+        Best Case: O(n)
+            - n is total number of nodes in the hashmap
+            we need to go to each node in the hashmap and free it
+
+        Average Case: O(n)
+            - n is total number of nodes in the hashmap
+            we need to go to each node in the hashmap and free it
+
+SPACE Complexity Analysis
+    hashmap_insert_any()
+        Worst O(n)
+            - n = number of nodes in the tree
+            When we resize the hashmap, we need to create a new array of double the current capacity, so we would have allocated 2n space. Therefore, the time complexity is O(n)
+
+        Best O(1)
+            If we don't need to resize, then we only malloc the size of the node, which means space allocated is not dependent on the number of nodes in the tree. Therefore, the time complexity is O(1)
+
+        Average O(1)
+            On average, we don't need to resize. If we don't need to resize, then we only malloc the size of the node, which means space allocated is not dependent on the number of nodes in the tree. Therefore, the time complexity is O(1)
+
+    hashmap_delete()
+        Worst O(n)
+            - n = number of nodes in the tree
+            When we resize the hashmap, we need to create a new array of half the current capacity, so we would have allocated n/2 space. Therefore, the time complexity is O(n)
+
+        Best O(1)
+            If we don't need to resize, then we are not allocating any more memory, so the time complexity is O(1), because it is constant.
+
+        Average O(1)
+            On average, we don't need to resize. If we don't need to resize, then we are not allocating any more memory, so the time complexity is O(1), because it is constant.
+
+    hashmap_destroy()
+        Best Case: O(1)
+            we are not allocating any more memory in this function, so O(1) is the space complexity
+
+        Worst Case: O(1)
+            we are not allocating any more memory in this function, so O(1) is the space complexity
+
+        Average Case: O(1)
+            we are not allocating any more memory in this function, so O(1) is the space complexity
 
 */
 
