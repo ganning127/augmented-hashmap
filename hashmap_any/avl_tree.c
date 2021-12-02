@@ -63,7 +63,7 @@ Space Complexity
 
 AVL Tree Space Complexity:
     The average and worst case space complexity are both O(n) because you are going
-    to have n number of nodes or an n amount of data.
+    to have n number of nodes for an n amount of data.
 
 avl_insert():
     Worst Case: O(1)
