@@ -14,7 +14,6 @@ enum
 
 /*
     Final Project Report: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
-    - TODO: Comment code in each function
 */
 
 size_t hashmap_hash(char *str, size_t size);
