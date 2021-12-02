@@ -83,7 +83,7 @@ avl_delete():
         We use a constant amount data for delete so the amount of space we use doesn't increase
 
     Average Case: O(1)
-        We use a constant amount data for delete so the amount of space we use doesn't increase 
+        We use a constant amount data for delete so the amount of space we use doesn't increase
 
 avl_destroy():
     Worst Case: O(1)
@@ -178,8 +178,6 @@ void avl_insert(TreeNodePtr *root, HNodePtr data)
     {
         if (strcmp(bst->data->key, data->key) > 0)
             avl_insert(&(bst->left), data);
-        else if (strcmp(bst->data->key, data->key) == 0)
-            return; // we don't want to insert a duplicate
         else
             avl_insert(&(bst->right), data);
     }
