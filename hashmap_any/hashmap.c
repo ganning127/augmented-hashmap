@@ -12,6 +12,11 @@ enum
     USHORT = 9,
 };
 
+/*
+    Final Project Report: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
+    - TODO: Comment code in each function
+*/
+
 size_t hashmap_hash(char *str, size_t size);
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value);
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key);
@@ -35,11 +40,6 @@ void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);
 void avl_destroy(TreeNodePtr *bst);
 void hashmap_destroy(ArrayListNodesPtr *listPtr);
 double getLoadFactor(ArrayListNodesPtr list);
-
-/*
-    Final Project Report: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
-    - TODO: Comment code in each function
-*/
 
 int main(void)
 {
