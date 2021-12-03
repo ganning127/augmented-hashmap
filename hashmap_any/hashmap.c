@@ -16,30 +16,30 @@ enum
     Final Project Report: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
 */
 
-size_t hashmap_hash(char *str, size_t size);
-void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value);
-HNodePtr hashmap_get(ArrayListNodesPtr list, char *key);
-void hashmap_delete(ArrayListNodesPtr list, char *key);
-void avl_insert(TreeNodePtr *root, HNodePtr data);
-void avl_delete(TreeNodePtr *root, char *key);
-void avl_print(TreeNodePtr bst);
-int max(int a, int b);
-size_t height(TreeNodePtr node);
-void avl_left_rotate(TreeNodePtr *bst);
-void avl_right_rotate(TreeNodePtr *bst);
-int avl_get_balance(TreeNodePtr node);
-TreeNodePtr *avl_successor(TreeNodePtr *treePtr);
-TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data);
-TreeNodePtr avl_balance_delete(TreeNodePtr bst);
-TreeNodePtr avl_find(TreeNodePtr bst, char *key);
-HNodePtr createHNodeAny(char *key, int type, void *value);
-ArrayListNodes *arln_create(size_t capacity);
-void displayNodeValue(HNodePtr node);
-void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);
-void avl_destroy(TreeNodePtr *bst);
-void hashmap_destroy(ArrayListNodesPtr *listPtr);
-double getLoadFactor(ArrayListNodesPtr list);
-void show_all_buckets(ArrayListNodesPtr list);
+size_t hashmap_hash(char *str, size_t size);                                       // hashes a string into a index
+void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value); // inserts a key value pair into the hashmap
+HNodePtr hashmap_get(ArrayListNodesPtr list, char *key);                           // gets a key value pair from the hashmap
+void hashmap_delete(ArrayListNodesPtr list, char *key);                            // deletes a key value pair from the hashmap
+void avl_insert(TreeNodePtr *root, HNodePtr data);                                 // inserts a node into the avl tree
+void avl_delete(TreeNodePtr *root, char *key);                                     // deletes a node from the avl tree
+void avl_print(TreeNodePtr bst);                                                   // prints the avl tree
+int max(int a, int b);                                                             // returns the max of two numbers
+size_t height(TreeNodePtr node);                                                   // returns the height of a node
+void avl_left_rotate(TreeNodePtr *bst);                                            // rotates the avl tree to the left (for balancing)
+void avl_right_rotate(TreeNodePtr *bst);                                           // rotates the avl tree to the right (for balancing)
+int avl_get_balance(TreeNodePtr node);                                             // returns the balance of a node
+TreeNodePtr *avl_successor(TreeNodePtr *treePtr);                                  // returns the successor of a node (for deletion)
+TreeNodePtr avl_balance_insert(TreeNodePtr bst, HNodePtr data);                    // balances the avl tree after insertion
+TreeNodePtr avl_balance_delete(TreeNodePtr bst);                                   // balances the avl tree after deletion
+TreeNodePtr avl_find(TreeNodePtr bst, char *key);                                  // finds a node in the avl tree
+HNodePtr createHNodeAny(char *key, int type, void *value);                         // create a node to be inserted into the tree
+ArrayListNodes *arln_create(size_t capacity);                                      // create an array list node
+void displayNodeValue(HNodePtr node);                                              // displays the value of a node
+void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);                  //    resizes the hashmap
+void avl_destroy(TreeNodePtr *bst);                                                // destroys the avl tree
+void hashmap_destroy(ArrayListNodesPtr *listPtr);                                  // destroys the hashmap
+double getLoadFactor(ArrayListNodesPtr list);                                      // returns the load factor of the hashmap
+void show_all_buckets(ArrayListNodesPtr list);                                     // displays all the buckets in the hashmap
 
 int main(void)
 {
