@@ -39,6 +39,7 @@ void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity);
 void avl_destroy(TreeNodePtr *bst);
 void hashmap_destroy(ArrayListNodesPtr *listPtr);
 double getLoadFactor(ArrayListNodesPtr list);
+void show_all_buckets(ArrayListNodesPtr list);
 
 int main(void)
 {
@@ -49,37 +50,108 @@ int main(void)
     char ins4 = 'A';
     unsigned long ins5 = 123456789;
 
-    hashmap_insert_any(list, "name", STRING, ins1);
+    char *key1 = "xzRyyIgY5rHzKgdWXFdw";
+    char *key2 = "EbI3v03srIID7U510Zl6";
+    char *key3 = "dkdFsUiENYylpTnZwGFj";
+    char *key4 = "dqa9raqZsj70jgkiJbQ3";
+    char *key5 = "E78i3OEDNNkvnxH1NYbM";
+    char *key6 = "VfXZNsuqpimj12tzB928";
+    char *key7 = "xD2KwCYjJtzk0O1jLfb9";
+    char *key8 = "YOzU86hEpC6ntekJWnRy";
+    char *key9 = "RwiEgg6b5oYzqcRH6VeU";
+    char *key10 = "KcC6thzPQggFYVjE2Ixx";
+    char *key11 = "qPYSFTGascyHjO8HtgzS";
+    char *key12 = "ao3dftOOPKAl4zIVG4wZ";
+    char *key13 = "QISI21CTjUyF0MC04LOm";
 
-    hashmap_insert_any(list, "age", UINT, &ins2);
-    hashmap_insert_any(list, "grade", DOUBLE, &ins3);
-    hashmap_insert_any(list, "letter_grade", CHAR, &ins4);
-    hashmap_insert_any(list, "id", ULONG, &ins5);
-    hashmap_insert_any(list, "id", ULONG, &ins2);
+    // char *key1 = "key1";
+    // char *key2 = "key2";
+    // char *key3 = "key3";
+    // char *key4 = "key4";
+    // char *key5 = "key5";
+    // char *key6 = "key6";
+    // char *key7 = "key7";
+    // char *key8 = "key8";
+    // char *key9 = "key9";
+    // char *key10 = "key10";
+    // char *key11 = "key11";
+    // char *key12 = "key12";
+    // char *key13 = "key13";
 
-    printf("size: %lu\n", list->size);
+    hashmap_insert_any(list, key1, STRING, ins1);
+    hashmap_insert_any(list, key2, UINT, &ins2);
+    hashmap_insert_any(list, key3, DOUBLE, &ins3);
+    hashmap_insert_any(list, key4, CHAR, &ins4);
+    hashmap_insert_any(list, key5, ULONG, &ins5);
+    hashmap_insert_any(list, key6, STRING, ins1);
+    hashmap_insert_any(list, key7, UINT, &ins2);
+    hashmap_insert_any(list, key8, DOUBLE, &ins3);
+    hashmap_insert_any(list, key9, CHAR, &ins4);
+    hashmap_insert_any(list, key10, ULONG, &ins5);
+    hashmap_insert_any(list, key11, STRING, ins1);
+    hashmap_insert_any(list, key12, UINT, &ins2);
+    hashmap_insert_any(list, key13, DOUBLE, &ins3);
 
-    // hashmap_delete(list, "name");
-    // hashmap_delete(list, "age");
-    // hashmap_delete(list, "grade");
-    // hashmap_delete(list, "letter_grade");
-    // hashmap_delete(list, "id");
+    // hashmap_delete(list, key1);
+    // hashmap_delete(list, key2);
+    // hashmap_delete(list, key3);
+    // hashmap_delete(list, key4);
+    // hashmap_delete(list, key5);
+    // hashmap_delete(list, key6);
+    // hashmap_delete(list, key7);
+    // hashmap_delete(list, key8);
+    // hashmap_delete(list, key9);
+    // hashmap_delete(list, key10);
+    // hashmap_delete(list, key11);
+    // hashmap_delete(list, key12);
+    // hashmap_delete(list, key13);
 
-    HNodePtr res1 = hashmap_get(list, "name");
-    HNodePtr res2 = hashmap_get(list, "age");
-    HNodePtr res3 = hashmap_get(list, "grade");
-    HNodePtr res4 = hashmap_get(list, "letter_grade");
-    HNodePtr res5 = hashmap_get(list, "id");
+    // show_all_buckets(list);
+
+    HNodePtr res1 = hashmap_get(list, key1);
+    HNodePtr res2 = hashmap_get(list, key2);
+    HNodePtr res3 = hashmap_get(list, key3);
+    HNodePtr res4 = hashmap_get(list, key4);
+    HNodePtr res5 = hashmap_get(list, key5);
+    HNodePtr res6 = hashmap_get(list, key6);
+    HNodePtr res7 = hashmap_get(list, key7);
+    HNodePtr res8 = hashmap_get(list, key8);
+    HNodePtr res9 = hashmap_get(list, key9);
+    HNodePtr res10 = hashmap_get(list, key10);
+    HNodePtr res11 = hashmap_get(list, key11);
+    HNodePtr res12 = hashmap_get(list, key12);
+    HNodePtr res13 = hashmap_get(list, key13);
 
     displayNodeValue(res1);
     displayNodeValue(res2);
     displayNodeValue(res3);
     displayNodeValue(res4);
     displayNodeValue(res5);
+    displayNodeValue(res6);
+    displayNodeValue(res7);
+    displayNodeValue(res8);
+    displayNodeValue(res9);
+    displayNodeValue(res10);
+    displayNodeValue(res11);
+    displayNodeValue(res12);
+    displayNodeValue(res13);
 
     hashmap_destroy(&list);
 
     return 0;
+}
+
+void show_all_buckets(ArrayListNodesPtr list)
+{
+    for (size_t i = 0; i < list->capacity; i++)
+    {
+        printf("Bucket %zu:\n", i);
+        if (list->array[i] != NULL)
+        {
+            avl_print(list->array[i]);
+        }
+        printf("------------------------\n");
+    }
 }
 
 void hashmap_destroy(ArrayListNodesPtr *listPtr)

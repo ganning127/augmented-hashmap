@@ -120,7 +120,7 @@ TreeNodePtr avl_find(TreeNodePtr bst, char *key)
         return avl_find(bst->right, key);
     else if (strcmp(bst->data->key, key) > 0) // Go let if the key is less than the current node
         return avl_find(bst->left, key);
-    else if (strcmp(bst->data->key, key) == 0) // Return the node if we found the right node
+    else // Return the node if we found the right node
         return bst;
 }
 
@@ -320,7 +320,7 @@ void avl_print(TreeNodePtr bst)
     for (unsigned int i = 0; i < depth; ++i)
         printf("  ");
 
-    printf("%d\n", *((int *)(bst->data->value)));
+    printf("%s\n", (char *)(bst->data->key));
     ++depth;
     avl_print(bst->left);
     --depth;
