@@ -13,6 +13,7 @@ enum
 };
 
 /*
+    TIME AND SPACE COMPLEXITY ANALYSIS BELOW:
     Final Project Report: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
 */
 
@@ -141,9 +142,7 @@ void show_all_buckets(ArrayListNodesPtr list)
 
 void hashmap_destroy(ArrayListNodesPtr *listPtr)
 {
-    /*
-        Destroys the hashmap, freeing all memory allocated to it
-    */
+    // Destroys the hashmap, freeing all memory allocated to it
     ArrayListNodesPtr list = *listPtr;
     for (size_t i = 0; i < list->capacity; i++) // go through each node in the array
     {
@@ -161,9 +160,7 @@ void hashmap_destroy(ArrayListNodesPtr *listPtr)
 
 void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_capacity)
 {
-    /*
-        Goes through each node in the bst and rehashes it into the new, resized hashmap
-    */
+    // Goes through each node in the bst and rehashes it into the new, resized hashmap
 
     if (bst == NULL)
         return;
@@ -172,18 +169,14 @@ void hashmap_resize_helper(TreeNodePtr *newArray, TreeNodePtr bst, size_t new_ca
     hashmap_resize_helper(newArray, bst->right, new_capacity);
 
     HNodePtr node = createHNodeAny(bst->data->key, bst->data->type, bst->data->value); // create a new node with the same data
-    // printf("node key: %s, capacity: %zu\n", node->key, new_capacity);
-    size_t hash = hashmap_hash(node->key, new_capacity); // get the hash of the new node
+    size_t hash = hashmap_hash(node->key, new_capacity);                               // get the hash of the new node
 
-    // printf("new hash of %s is %zu\n", node->key, hash);
     avl_insert(&(newArray[hash]), node); // insert the new node into the new bucket
 }
 
 void free_list(ArrayListNodesPtr list)
 {
-    /*
-        Frees the list->array in a hashmap
-    */
+    // Frees the list->array in a hashmap
     for (size_t i = 0; i < list->capacity; i++) // go through each AVL tree at the bucket
     {
         TreeNodePtr node = list->array[i];
@@ -195,9 +188,7 @@ void free_list(ArrayListNodesPtr list)
 
 void hashmap_resize(ArrayListNodesPtr list, size_t new_capacity)
 {
-    /*
-        Resize the hashmap->array to the new capacity
-    */
+    // Resize the hashmap->array to the new capacity
     TreeNodePtr *newArray = (TreeNodePtr *)calloc(sizeof(TreeNodePtr), new_capacity);
 
     for (size_t i = 0; i < list->capacity; i++) // go through each bucket in the hashmap
@@ -251,7 +242,7 @@ ArrayListNodes *arln_create(size_t capacity)
     ArrayListNodes *list = malloc(sizeof(ArrayListNodes));
     list->size = 0;
     list->capacity = capacity;
-    list->array = calloc(sizeof(TreeNodePtr), list->capacity);
+    list->array = calloc(sizeof(TreeNodePtr), list->capacity); // sets each element to NULL
     return list;
 }
 
@@ -280,10 +271,7 @@ double getLoadFactor(ArrayListNodesPtr list)
 
 void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value)
 {
-    /*
-        insert a node into the hashmap
-        TODO: figure out where to put list->size++
-    */
+    // insert a node into the hashmap
 
     // check if the node is already in there
 
@@ -295,7 +283,6 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
         return;
     }
 
-    // printf("size: %zu\n", list->size);
     HNodePtr nu = createHNodeAny(key, type, value);
     avl_insert(&(list->array[index]), nu);               // nu is now the data that we want to insert into the tree
     list->size++;                                        // increment the size of the hashmap
@@ -305,9 +292,7 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
 
 HNodePtr hashmap_get(ArrayListNodesPtr list, char *key)
 {
-    /*
-        get the node with the key
-    */
+    // get the node with the key
     // get node with a key
     size_t index = hashmap_hash(key, list->capacity);
     TreeNodePtr bst = list->array[index];  // get root of tree at the bucket
@@ -327,7 +312,6 @@ size_t hashmap_hash(char *str, size_t size)
     size_t hash = 0;
     while (*str != '\0')
     {
-        // printf("%c", *str);
         hash = (hash * 31 + *str) % size;
         ++str;
     }

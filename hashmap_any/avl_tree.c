@@ -15,7 +15,8 @@ TreeNodePtr avl_find(TreeNodePtr bst, char *key);
 void avl_destroy(TreeNodePtr *bst);
 
 /*
-    Time and Space Complexity analysis: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
+    TIME AND SPACE COMPLEXITY ANALYSIS BELOW:
+    Final Project Report: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
 */
 
 // Main Functions
@@ -199,13 +200,12 @@ void avl_left_rotate(TreeNodePtr *bst)
     bst_deref->height = max(height(bst_deref->left), height(bst_deref->right)) + 1;
     bst_right->height = max(height(bst_right->left), height(bst_right->right)) + 1;
 
-    //
+    // reassign the root node to the balanced node
     *bst = bst_right;
 }
 void avl_right_rotate(TreeNodePtr *bst)
 {
     // right rotate in avl tree balance
-
     // Get the node we are working with and it's children
     TreeNodePtr bst_deref = *bst;
     TreeNodePtr bst_left = bst_deref->left;
