@@ -22,9 +22,7 @@ void avl_destroy(TreeNodePtr *bst);
 
 TreeNodePtr avl_find(TreeNodePtr bst, char *key)
 {
-    /*
-        Finds a node in a tree using a key
-    */
+    // Finds a node in a tree using a key
     if (!bst) // Go up a node if the current is NULL
         return NULL;
     else if (strcmp(bst->data->key, key) < 0) // Go right if the the key is greater than the current node
@@ -243,10 +241,8 @@ TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
     TreeNodePtr tree = *treePtr;
     if (tree->left == NULL)
         return treePtr;
-    return avl_successor(&(tree->left));
+    return avl_successor(&(tree->left)); // go all the way to the left node
 }
-
-// Math Functions
 
 int max(int a, int b)
 {

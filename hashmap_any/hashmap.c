@@ -64,20 +64,6 @@ int main(void)
     char *key12 = "ao3dftOOPKAl4zIVG4wZ";
     char *key13 = "QISI21CTjUyF0MC04LOm";
 
-    // char *key1 = "key1";
-    // char *key2 = "key2";
-    // char *key3 = "key3";
-    // char *key4 = "key4";
-    // char *key5 = "key5";
-    // char *key6 = "key6";
-    // char *key7 = "key7";
-    // char *key8 = "key8";
-    // char *key9 = "key9";
-    // char *key10 = "key10";
-    // char *key11 = "key11";
-    // char *key12 = "key12";
-    // char *key13 = "key13";
-
     hashmap_insert_any(list, key1, STRING, ins1);
     hashmap_insert_any(list, key2, UINT, &ins2);
     hashmap_insert_any(list, key3, DOUBLE, &ins3);
@@ -91,10 +77,11 @@ int main(void)
     hashmap_insert_any(list, key11, STRING, ins1);
     hashmap_insert_any(list, key12, UINT, &ins2);
     hashmap_insert_any(list, key13, DOUBLE, &ins3);
+    hashmap_insert_any(list, key1, STRING, "changed key1"); // trying to insert a duplicate key
 
-    // hashmap_delete(list, key1);
-    // hashmap_delete(list, key2);
-    // hashmap_delete(list, key3);
+    // hashmap_delete(list, key1); // deletes the key1 value
+    hashmap_delete(list, key2);
+    hashmap_delete(list, key3);
     // hashmap_delete(list, key4);
     // hashmap_delete(list, key5);
     // hashmap_delete(list, key6);
@@ -106,11 +93,9 @@ int main(void)
     // hashmap_delete(list, key12);
     // hashmap_delete(list, key13);
 
-    // show_all_buckets(list);
-
     HNodePtr res1 = hashmap_get(list, key1);
-    HNodePtr res2 = hashmap_get(list, key2);
-    HNodePtr res3 = hashmap_get(list, key3);
+    HNodePtr res2 = hashmap_get(list, key2); // should say not found
+    HNodePtr res3 = hashmap_get(list, key3); // should say not found
     HNodePtr res4 = hashmap_get(list, key4);
     HNodePtr res5 = hashmap_get(list, key5);
     HNodePtr res6 = hashmap_get(list, key6);
@@ -306,7 +291,7 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
     // printf("hashindex of %s is %zu\n", key, index);
     if (avl_find(list->array[index], key) != NULL) // if the node is already in the hashmap
     {
-        printf("node already in hashmap\n");
+        printf("key \"%s\" is already in hashmap.\n", key);
         return;
     }
 
