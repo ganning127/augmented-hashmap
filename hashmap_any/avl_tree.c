@@ -15,112 +15,21 @@ TreeNodePtr avl_find(TreeNodePtr bst, char *key);
 void avl_destroy(TreeNodePtr *bst);
 
 /*
-
-Time Complexity
-
-avl_insert():
-    Worst Case: O(log(n))
-        If the item we are trying to insert is at the very bottom of the tree then it would be O(log(n)) because the tree is balanced
-
-    Best Case: O(1)
-        If the item we are trying to insert is inserted at the root then it would have constant time
-
-    Average Case: O(log(n))
-        The average time complexity would be O(log(n)) because the tree is always balanced
-
-avl_delete():
-    Worst Case: O(log(n))
-        If the item we are trying to delete is at the very bottom of the tree then it would be O(log(n)) because the tree is balanced
-
-    Best Case: O(1)
-        If the item we are trying to deleted is at the root then it would have constant time
-
-    Average Case: O(log(n))
-        The average time complexity would be O(log(n)) because the tree is always balanced
-
-avl_destroy():
-    Worst Case: O(n)
-        We have to go through all of the elements of the tree to free them
-
-    Best Case: O(n)
-        We have to go through all of the elements of the tree to free them
-
-    Average Case: O(n)
-        We have to go through all of the elements of the tree to free them
-
-avl_find():
-    Worst Case: O(log(n))
-        If the node we are trying to find is at the bottom then we would have log(n) time because it is balanced
-
-    Best Case: O(1)
-        If the node we are trying to find is at the root then we have constant time
-
-    Average Case: O(log(n))
-        The tree is always balanced so our average time complexity would be log(n)
-
-
-Space Complexity
-
-AVL Tree Space Complexity:
-    The average and worst case space complexity are both O(n) because you are going
-    to have n number of nodes for an n amount of data.
-
-avl_insert():
-    Worst Case: O(1)
-        We use a constant amount of data for insert so the amount of space we use doesn't increase
-
-    Best Case: O(1)
-        We use a constant amount data for insert so the amount of space we use doesn't increase
-
-    Average Case: O(1)
-        We use a constant amount data for insert so the amount of space we use doesn't increase
-
-avl_delete():
-    Worst Case: O(1)
-        We use a constant amount data for delete so the amount of space we use doesn't increase
-
-    Best Case: O(1)
-        We use a constant amount data for delete so the amount of space we use doesn't increase
-
-    Average Case: O(1)
-        We use a constant amount data for delete so the amount of space we use doesn't increase 
-
-avl_destroy():
-    Worst Case: O(1)
-        We use a constant amount data for destroy so the amount of space we use doesn't increase
-
-    Best Case: O(1)
-        We use a constant amount data for destroy so the amount of space we use doesn't increase
-
-    Average Case: O(1)
-        We use a constant amount data for destroy so the amount of space we use doesn't increase
-
-avl_find():
-    Worst Case: O(1)
-        We use a constant amount data for find so the amount of space we use doesn't increase
-
-    Best Case: O(1)
-        We use a constant amount data for find so the amount of space we use doesn't increase
-
-    Average Case: O(1)
-        We use a constant amount data for find so the amount of space we use doesn't increase
-
+    Time and Space Complexity analysis: https://docs.google.com/document/d/1zridcGqDUKdQFI2e_7YKVFYb9zUMmOIzB2rqOThJQ1A/edit?usp=sharing
 */
 
 // Main Functions
 
 TreeNodePtr avl_find(TreeNodePtr bst, char *key)
 {
-    /*
-        Finds a node in a tree using a key
-    */
+    // Finds a node in a tree using a key
     if (!bst) // Go up a node if the current is NULL
         return NULL;
     else if (strcmp(bst->data->key, key) < 0) // Go right if the the key is greater than the current node
         return avl_find(bst->right, key);
     else if (strcmp(bst->data->key, key) > 0) // Go let if the key is less than the current node
         return avl_find(bst->left, key);
-    else if (strcmp(bst->data->key, key) == 0) // Return the node if we found the right node
+    else // Return the node if we found the right node
         return bst;
 }
 
@@ -178,8 +87,6 @@ void avl_insert(TreeNodePtr *root, HNodePtr data)
     {
         if (strcmp(bst->data->key, data->key) > 0)
             avl_insert(&(bst->left), data);
-        else if (strcmp(bst->data->key, data->key) == 0)
-            return; // we don't want to insert a duplicate
         else
             avl_insert(&(bst->right), data);
     }
@@ -336,10 +243,8 @@ void avl_print(TreeNodePtr bst)
     for (unsigned int i = 0; i < depth; ++i)
         printf("  ");
 
-    // Print the node we are on
-    printf("%d\n", *((int *)(bst->data->value)));
+    printf("%s\n", (char *)(bst->data->key));
 
-    // Update the depth when we go down
     ++depth;
 
     // Print the left sub-tree
@@ -357,8 +262,6 @@ TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
         return treePtr;                  // Return the successor
     return avl_successor(&(tree->left)); // Search the left sub-tree for the successor
 }
-
-// Math Functions
 
 int max(int a, int b)
 {
