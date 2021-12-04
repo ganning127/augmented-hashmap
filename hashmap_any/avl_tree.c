@@ -298,33 +298,54 @@ void avl_left_rotate(TreeNodePtr *bst)
 void avl_right_rotate(TreeNodePtr *bst)
 {
     // right rotate in avl tree balance
+
+    // Get the node we are working with and it's children
     TreeNodePtr bst_deref = *bst;
     TreeNodePtr bst_left = bst_deref->left;
     TreeNodePtr bst_left_right = bst_left->right;
 
+    // Move the root node to the right
     bst_left->right = *bst;
+    // Move the left node's right child to the left
     bst_deref->left = bst_left_right;
 
+    // Update the heights
     bst_deref->height = max(height(bst_deref->left), height(bst_deref->right)) + 1;
     bst_left->height = max(height(bst_left->left), height(bst_left->right)) + 1;
+
+    // Move the left node to the root
     *bst = bst_left;
 }
 void avl_print(TreeNodePtr bst)
 {
     // print avl tree horizontally
     static unsigned int depth = 0; // this line only runs once
+
+    // Move up if the node is NULL
     if (bst == NULL)
         return;
+
+    // Update depth when we go down
     ++depth;
+    // Go to the right sub-tree
     avl_print(bst->right);
+    // Update depth when we come up
     --depth;
 
+    // Print the right number of indents for the current depth
     for (unsigned int i = 0; i < depth; ++i)
         printf("  ");
 
+    // Print the node we are on
     printf("%d\n", *((int *)(bst->data->value)));
+
+    // Update the depth when we go down
     ++depth;
+
+    // Print the left sub-tree
     avl_print(bst->left);
+
+    // Update the depth when we come back up
     --depth;
 }
 
@@ -332,9 +353,9 @@ TreeNodePtr *avl_successor(TreeNodePtr *treePtr)
 {
     // find node to succeed a node in avl_delete()
     TreeNodePtr tree = *treePtr;
-    if (tree->left == NULL)
-        return treePtr;
-    return avl_successor(&(tree->left));
+    if (tree->left == NULL)              // If the left node is NULL it means that it is the node that is the furthest to the left in the right sub-tree
+        return treePtr;                  // Return the successor
+    return avl_successor(&(tree->left)); // Search the left sub-tree for the successor
 }
 
 // Math Functions
@@ -350,7 +371,7 @@ int avl_get_balance(TreeNodePtr node)
     // get the balance factor of the left and right subtrees
     if (!node)
         return 0;
-    return height(node->left) - height(node->right);
+    return height(node->left) - height(node->right); // The balance of a node is the height of the left subtree minus the height of the right subtree
 }
 
 size_t height(TreeNodePtr node)
