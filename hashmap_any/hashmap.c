@@ -78,9 +78,9 @@ int main(void)
     hashmap_insert_any(list, key11, STRING, ins1);
     hashmap_insert_any(list, key12, UINT, &ins2);
     hashmap_insert_any(list, key13, DOUBLE, &ins3);
-    hashmap_insert_any(list, key1, STRING, "changed key1"); // trying to insert a duplicate key
+    hashmap_insert_any(list, key1, STRING, "changed key1"); // updating dup key
 
-    // hashmap_delete(list, key1); // deletes the key1 value
+    // hashmap_delete(list, key1);
     hashmap_delete(list, key2);
     hashmap_delete(list, key3);
     // hashmap_delete(list, key4);
@@ -277,9 +277,10 @@ void hashmap_insert_any(ArrayListNodesPtr list, char *key, int type, void *value
 
     size_t index = hashmap_hash(key, list->capacity); // get the hash
     // printf("hashindex of %s is %zu\n", key, index);
-    if (avl_find(list->array[index], key) != NULL) // if the node is already in the hashmap
+    TreeNodePtr found = avl_find(list->array[index], key); // find the node with the key at the bucket
+    if (found != NULL)                                     // if the node is already in the hashmap
     {
-        printf("key \"%s\" is already in hashmap.\n", key);
+        found->data->value = value; // update the value
         return;
     }
 
